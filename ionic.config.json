@@ -1,0 +1,7 @@
+{
+  "name": "Fly TV",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

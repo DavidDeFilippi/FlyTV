@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Fly TV</string>
+    <string name="title_activity_main">Fly TV</string>
+    <string name="package_name">com.defilippi.flytv</string>
+    <string name="custom_url_scheme">com.defilippi.flytv</string>
+    <string name="admob_app_id">ca-app-pub-4427288659732696~3672146573</string>
+</resources>

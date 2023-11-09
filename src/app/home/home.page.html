@@ -1,0 +1,70 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="dark">
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding" color="light" style="font-size: 16px;">
+    <p style="font-size: 18px;">Instrucciones de Uso de la Aplicacion</p>
+    <p>Selecciona Categoria: </p>
+    <ion-img src="assets/instrucciones/lista.png"></ion-img>
+    <p>Selecciona Canal:</p>
+    <ion-img src="assets/instrucciones/canales.png"></ion-img>
+
+    <p>Y listo!</p>
+    <ion-img src="assets/instrucciones/cargandocanal.png"></ion-img>
+
+    <p style="font-style: italic; font-size: 12px;">* Algunos canales pueden demorar en conectar dependiendo de la conexion que haya en el momento</p>
+
+  </ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar color="dark">
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title class="ion-text-center" size="large">Fly TV <img src="assets/icon/logo-icon.png"
+          style="width: 30px;"></ion-title>
+    </ion-toolbar>
+    <ion-list color="light" class="ion-text-capitalize">
+      <ion-item color="light" class="ion-text-capitalize">
+        <ion-select class="ion-text-capitalize" color="light" aria-label="Fruit" interface="popover"
+          placeholder="Seleccione una categoria" [innerHTML]="htmlSelectOption" (ionChange)="handleChange($event)">
+          <!-- <ion-select-option color="dark" *ngfor="let canal of canales" [value]="canal.name">{{canal.name}}</ion-select-option> -->
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-button [disabled]="rewardBlocked" (click)="showRewardVideo()" expand="full"
+        style="font-size: 10px;">Apoyanos Viendo una Publicidad aqui</ion-button>
+  </ion-header>
+
+  <ion-content>
+
+    <ion-list *ngFor="let channel of channels">
+      <a [attr.id]="channel.id" [routerLink]="channel.categoria == 'webcam' ? ['/webcam'] : ['/reproductor']"
+        [queryParams]="{id: channel.id}">
+        <ion-item color="dark">
+          <img class="channel-logo" [src]="channel.logo"><ion-label>{{channel.name}}
+
+            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: aquamarine;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
+
+          </ion-label>
+        </ion-item>
+      </a>
+    </ion-list>
+
+    <ion-list lines="none">
+      <ion-item>
+        <ion-label></ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label></ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-label></ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
