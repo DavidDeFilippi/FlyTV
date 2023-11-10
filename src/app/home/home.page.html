@@ -45,7 +45,7 @@
     <ion-list *ngFor="let channel of channels">
       <a [attr.id]="channel.id" [routerLink]="channel.categoria == 'webcam' ? ['/webcam'] : ['/reproductor']"
         [queryParams]="{id: channel.id}">
-        <ion-item color="dark">
+        <ion-item color="dark" (click)="hideBanner()">
           <img class="channel-logo" [src]="channel.logo"><ion-label>{{channel.name}}
 
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: aquamarine;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
