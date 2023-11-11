@@ -65,22 +65,26 @@ export class HomePage {
     this.channelService.getParrilla().subscribe((data) => {
 
       this.parrilla = data;
-      
+
       for (let i = 0; i < this.channels.length; i++) {
         for (let j = 0; j < this.parrilla.length; j++) {
           if (this.channels[i].id == this.parrilla[j].id) {
             this.channels[i].parrilla = this.parrilla[j].parrilla;
-            this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.channels[i].parrilla);
-            this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
+            this.channelsBackUp[i].parrilla = this.parrilla[j].parrilla;
+
+            this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
+            this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
+
+            this.channels[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
+            this.channelsBackUp[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
           } else {
+            this.channels[i].parrilla = [];
             this.channels[i].parrilla = [];
           }
         }
       }
-
-      console.log(this.channels);
-
     });
+
   }
 
   getCurrentPrograma(x: any) {
@@ -121,27 +125,35 @@ export class HomePage {
   }
 
   async getCategory(c: string) {
+
+    console.log(this.channels);
     if (c === 'todos' || c === '' || c === undefined) {
-      this.channels = this.channelsBackUp;
       this.globalVar.setGlobalCategory('todos');
+      for (let i = 0; i < this.channels.length; i++) {
+        this.channels[i].enabled = true;
+      }
+
     } else {
-      this.channels = [];
-      for (var obj of this.channelsBackUp) {
-        if (obj.categoria === c) {
-          this.channels.push(obj);
+
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].categoria === c) {
+          this.channels[i].enabled = true;
+        } else {
+          this.channels[i].enabled = false;
         }
-        this.globalVar.setGlobalCategory(c);
+
       }
     }
+    this.globalVar.setGlobalCategory(c);
 
     this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
 
     for (var x of this.categories) {
       this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
     }
-
     this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
   }
+
   async listCategories() {
     this.categories = [];
     for (let i = 0; i < this.channels.length; i++) {

@@ -43,7 +43,7 @@
   <ion-content>
 
     <ion-list *ngFor="let channel of channels">
-      <a [attr.id]="channel.id" [routerLink]="channel.categoria == 'webcam' ? ['/webcam'] : ['/reproductor']"
+      <a [attr.id]="channel.id" [routerLink]="channel.categoria == 'webcam' ? ['/webcam'] : ['/reproductor']" *ngIf="channel.enabled"
         [queryParams]="{id: channel.id}">
         <ion-item color="dark" (click)="hideBanner()">
           <img class="channel-logo" [src]="channel.logo"><ion-label>{{channel.name}}
