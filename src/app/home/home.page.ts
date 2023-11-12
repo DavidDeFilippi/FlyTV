@@ -73,9 +73,10 @@ export class HomePage {
             this.channelsBackUp[i].parrilla = this.parrilla[j].parrilla;
 
             this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
-            this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
-
             this.channels[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
+
+            
+            this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
             this.channelsBackUp[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
           } else {
             this.channels[i].parrilla = [];
@@ -125,8 +126,7 @@ export class HomePage {
   }
 
   async getCategory(c: string) {
-
-    console.log(this.channels);
+    
     if (c === 'todos' || c === '' || c === undefined) {
       this.globalVar.setGlobalCategory('todos');
       for (let i = 0; i < this.channels.length; i++) {
