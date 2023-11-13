@@ -14,7 +14,7 @@ export class AppComponent {
     
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.outlet?.canGoBack()) {
-        App.exitApp();
+        // App.exitApp();
       }
     });
   }

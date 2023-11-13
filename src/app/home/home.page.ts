@@ -151,6 +151,9 @@ export class HomePage {
     for (var x of this.categories) {
       this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
     }
+      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" class="ion-text-capitalize" disabled="true"></ion-select-option>`;
+      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" class="ion-text-capitalize" disabled="true"></ion-select-option>`;
+
     this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
   }
 
