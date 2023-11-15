@@ -32,7 +32,7 @@ function getListeners(){
     console.log(data);
 
     document.getElementById('video').style.backgroundImage="url(../../assets/videoError.png)";
-    document.getElementById("video").style.backgroundSize = "170px";
+    document.getElementById("video").style.backgroundSize = "100px";
 
     var errorType = data.type;
     var errorDetails = data.details;
