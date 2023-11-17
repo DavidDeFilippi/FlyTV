@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { WebcamPageRoutingModule } from './webcam-routing.module';
+import { IframePageRoutingModule } from './iframe-routing.module';
 
-import { WebcamPage } from './webcam.page';
+import { IframePage } from './iframe.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    WebcamPageRoutingModule
+    IframePageRoutingModule
   ],
-  declarations: [WebcamPage]
+  declarations: [IframePage]
 })
-export class WebcamPageModule {}
+export class IframePageModule {}

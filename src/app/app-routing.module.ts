@@ -16,8 +16,8 @@ const routes: Routes = [
     loadChildren: () => import('./reproductor/reproductor.module').then( m => m.ReproductorPageModule)
   },
   {
-    path: 'webcam',
-    loadChildren: () => import('./webcam/webcam.module').then( m => m.WebcamPageModule)
+    path: 'iframe',
+    loadChildren: () => import('./iframe/iframe.module').then( m => m.IframePageModule)
   },
 ];
 

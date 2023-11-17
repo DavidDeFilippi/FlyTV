@@ -5,11 +5,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 
 @Component({
-  selector: 'app-webcam',
-  templateUrl: './webcam.page.html',
-  styleUrls: ['./webcam.page.scss'],
+  selector: 'app-iframe',
+  templateUrl: './iframe.page.html',
+  styleUrls: ['./iframe.page.scss'],
 })
-export class WebcamPage implements OnInit {
+export class IframePage implements OnInit {
   id: any;
   channel: any;
   channels: any;
