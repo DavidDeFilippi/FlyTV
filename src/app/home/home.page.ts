@@ -182,7 +182,7 @@ export class HomePage {
       initializeForTesting: false,
     });
 
-    this.showBanner();
+    this.showInterstitial();
   }
 
   async showBanner() {
@@ -217,14 +217,28 @@ export class HomePage {
     );
 
     const options: RewardAdOptions = {
-      adId: 'ca-app-pub-4427288659732696/9515865157',
+      adId: 'ca-app-pub-4427288659732696/5982400519',
       // npa: true,
       // ssv: {}
-      isTesting: false,
+      isTesting: true,
     }
 
     await AdMob.prepareRewardVideoAd(options);
     await AdMob.showRewardVideoAd();
+
+  }
+
+  async showInterstitial(){
+
+    const options: AdOptions = {
+      adId: 'ca-app-pub-4427288659732696/1947824722',
+      isTesting: true,
+    }
+
+    await AdMob.prepareInterstitial(options);
+    await AdMob.showInterstitial();
+
+    // this.showAlert();
 
   }
 
