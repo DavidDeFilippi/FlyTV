@@ -36,35 +36,48 @@
         </ion-select>
       </ion-item>
     </ion-list>
-    <ion-button [disabled]="rewardBlocked" (click)="showRewardVideo()" expand="full"
-        style="font-size: 10px;">Apoyanos Viendo una Publicidad aqui</ion-button>
   </ion-header>
 
   <ion-content>
 
     <ion-list *ngFor="let channel of channels">
-      <a [attr.id]="channel.id" [routerLink]="channel.iframe ? ['/iframe'] : ['/reproductor']" *ngIf="channel.enabled"
-        [queryParams]="{id: channel.id}">
-        <ion-item color="dark" (click)="hideBanner()">
-          <img class="channel-logo" [src]="channel.logo"><ion-label>{{channel.name}}
+        <ion-item color="dark" *ngIf="channel.enabled">
+          <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" [routerLink]="channel.iframe ? ['/iframe'] : ['/reproductor']" [queryParams]="{id: channel.id}">{{channel.name}}
 
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: aquamarine;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px;    color: aquamarine;" ><p expand="block" (click)="setOpen(true, channel)">ver programacion</p></ion-label>
         </ion-item>
-      </a>
     </ion-list>
+    
+    <ion-modal [isOpen]="isModalOpen">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title><img [src]="channelModal.logo"
+              style="width: 30px; vertical-align: middle; margin-right: 10px;">Programacion {{channelModal.name}}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="setOpen(false,channel)">Cerrar</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <h4 class="ion-text-center">{{channelModal.diaParrilla}}</h4>
 
-    <ion-list lines="none">
-      <ion-item>
-        <ion-label></ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label></ion-label>
-      </ion-item>
-      <ion-item>
-        <ion-label></ion-label>
-      </ion-item>
-    </ion-list>
+          <ion-list *ngFor="let p of modalParrilla">
+            <ion-item>
+              <ion-label>
+                {{p.horaNormal}}
+              </ion-label>
+              <ion-label>
+                {{p.programa}}
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
   </ion-content>

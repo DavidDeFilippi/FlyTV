@@ -3,6 +3,10 @@
 
 /** Ionic CSS Variables **/
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+ion-button {
+  text-transform: none;
+  width: 80%;
+ }
 
 :root {
   --ion-background-color: #034c68;

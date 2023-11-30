@@ -33,6 +33,10 @@ export class HomePage {
   parrilla: any;
   htmlSelectOption: any;
   selected_value: string = '';
+  channelModal: any;
+  isModalOpen = false;
+  diaParrilla: string = '';
+  modalParrilla: any;
 
   constructor(private channelService: ChannelsService, private loadingCtrl: LoadingController, private globalVar: GlobalVarService, private so: ScreenOrientation, private sanitizer: DomSanitizer) { }
 
@@ -65,10 +69,12 @@ export class HomePage {
     this.channelService.getParrilla().subscribe((data) => {
 
       this.parrilla = data;
-
+      
       for (let i = 0; i < this.channels.length; i++) {
+        this.channels[i].parrilla = [];
         for (let j = 0; j < this.parrilla.length; j++) {
           if (this.channels[i].id == this.parrilla[j].id) {
+
             this.channels[i].parrilla = this.parrilla[j].parrilla;
             this.channelsBackUp[i].parrilla = this.parrilla[j].parrilla;
 
@@ -78,9 +84,6 @@ export class HomePage {
             
             this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
             this.channelsBackUp[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
-          } else {
-            this.channels[i].parrilla = [];
-            this.channels[i].parrilla = [];
           }
         }
       }
@@ -122,6 +125,7 @@ export class HomePage {
         y = fin.toLocaleTimeString().slice(0, -3) + ' ' + x[i + 1].programa + '';
       }
     }
+    this.diaParrilla = new Date(x[0].hora).toLocaleDateString()
     return y;
   }
 
@@ -151,9 +155,7 @@ export class HomePage {
     for (var x of this.categories) {
       this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
     }
-      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" class="ion-text-capitalize" disabled="true"></ion-select-option>`;
-      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" class="ion-text-capitalize" disabled="true"></ion-select-option>`;
-
+    
     this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
   }
 
@@ -185,60 +187,58 @@ export class HomePage {
     this.showInterstitial();
   }
 
-  async showBanner() {
-    const adId = isPlatform('ios') ? 'ios-ad-ad' : 'android-ad-unit';
+  // async showBanner() {
+  //   const adId = isPlatform('ios') ? 'ios-ad-ad' : 'android-ad-unit';
 
-    const options: BannerAdOptions = {
-      adId: 'ca-app-pub-4427288659732696/5842196102',
-      adSize: BannerAdSize.ADAPTIVE_BANNER,
-      position: BannerAdPosition.BOTTOM_CENTER,
-      margin: 0,
-      isTesting: false,
-    }
+  //   const options: BannerAdOptions = {
+  //     adId: 'ca-app-pub-4427288659732696/5842196102',
+  //     adSize: BannerAdSize.ADAPTIVE_BANNER,
+  //     position: BannerAdPosition.BOTTOM_CENTER,
+  //     margin: 0,
+  //     isTesting: false,
+  //   }
 
-    await AdMob.showBanner(options);
-  }
+  //   await AdMob.showBanner(options);
+  // }
 
-  async hideBanner() {
-    // await AdMob.hideBanner();
+  // async hideBanner() {
+  //   // await AdMob.hideBanner();
 
-    await AdMob.removeBanner();
-  }
+  //   await AdMob.removeBanner();
+  // }
 
-  async showRewardVideo() {
+  // async showRewardVideo() {
 
-    this.rewardBlocked = true;
+  //   this.rewardBlocked = true;
 
-    AdMob.addListener(
-      RewardAdPluginEvents.Rewarded,
-      (reward: AdMobRewardItem) => {
-        console.log('REWARD: ', reward);
-      }
-    );
+  //   AdMob.addListener(
+  //     RewardAdPluginEvents.Rewarded,
+  //     (reward: AdMobRewardItem) => {
+  //       console.log('REWARD: ', reward);
+  //     }
+  //   );
 
-    const options: RewardAdOptions = {
-      adId: 'ca-app-pub-4427288659732696/5982400519',
-      // npa: true,
-      // ssv: {}
-      isTesting: true,
-    }
+  //   const options: RewardAdOptions = {
+  //     adId: 'ca-app-pub-4427288659732696/5982400519',
+  //     // npa: true,
+  //     // ssv: {}
+  //     isTesting: false,
+  //   }
 
-    await AdMob.prepareRewardVideoAd(options);
-    await AdMob.showRewardVideoAd();
+  //   await AdMob.prepareRewardVideoAd(options);
+  //   await AdMob.showRewardVideoAd();
 
-  }
+  // }
 
   async showInterstitial(){
 
     const options: AdOptions = {
       adId: 'ca-app-pub-4427288659732696/1947824722',
-      isTesting: true,
+      isTesting: false,
     }
 
     await AdMob.prepareInterstitial(options);
     await AdMob.showInterstitial();
-
-    // this.showAlert();
 
   }
 
@@ -263,6 +263,22 @@ export class HomePage {
   handleChange(e: any) {
     // console.log('ionChange fired with value: ' + e.detail.value);
     this.getCategory(e.detail.value);
+  }
+
+  //MODAL PROGRAMACION
+
+  setOpen(isOpen: boolean, ch: any) {
+    if(isOpen){
+      this.channelModal = ch;
+      this.channelModal.diaParrilla = this.diaParrilla;
+      this.modalParrilla = this.channelModal.parrilla;
+      this.isModalOpen = isOpen;
+    }else{
+      this.isModalOpen = isOpen;
+      this.channelModal = [];
+      this.modalParrilla = [];
+    }
+    
   }
 
 }
