@@ -48,11 +48,11 @@
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px;    color: aquamarine;" ><p expand="block" (click)="setOpen(true, channel)">ver programacion</p></ion-label>
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px;    color: aquamarine;" (click)="setOpen(true, channel)"><p expand="block">ver programacion</p></ion-label>
         </ion-item>
     </ion-list>
     
-    <ion-modal [isOpen]="isModalOpen">
+    <ion-modal [isOpen]="isModalOpen" (willDismiss)="setOpen(false)">
       <ng-template>
         <ion-header>
           <ion-toolbar>

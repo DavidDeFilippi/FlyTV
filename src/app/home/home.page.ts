@@ -187,49 +187,6 @@ export class HomePage {
     this.showInterstitial();
   }
 
-  // async showBanner() {
-  //   const adId = isPlatform('ios') ? 'ios-ad-ad' : 'android-ad-unit';
-
-  //   const options: BannerAdOptions = {
-  //     adId: 'ca-app-pub-4427288659732696/5842196102',
-  //     adSize: BannerAdSize.ADAPTIVE_BANNER,
-  //     position: BannerAdPosition.BOTTOM_CENTER,
-  //     margin: 0,
-  //     isTesting: false,
-  //   }
-
-  //   await AdMob.showBanner(options);
-  // }
-
-  // async hideBanner() {
-  //   // await AdMob.hideBanner();
-
-  //   await AdMob.removeBanner();
-  // }
-
-  // async showRewardVideo() {
-
-  //   this.rewardBlocked = true;
-
-  //   AdMob.addListener(
-  //     RewardAdPluginEvents.Rewarded,
-  //     (reward: AdMobRewardItem) => {
-  //       console.log('REWARD: ', reward);
-  //     }
-  //   );
-
-  //   const options: RewardAdOptions = {
-  //     adId: 'ca-app-pub-4427288659732696/5982400519',
-  //     // npa: true,
-  //     // ssv: {}
-  //     isTesting: false,
-  //   }
-
-  //   await AdMob.prepareRewardVideoAd(options);
-  //   await AdMob.showRewardVideoAd();
-
-  // }
-
   async showInterstitial(){
 
     const options: AdOptions = {
@@ -267,7 +224,7 @@ export class HomePage {
 
   //MODAL PROGRAMACION
 
-  setOpen(isOpen: boolean, ch: any) {
+  setOpen(isOpen: boolean, ch?: any) {
     if(isOpen){
       this.channelModal = ch;
       this.channelModal.diaParrilla = this.diaParrilla;
