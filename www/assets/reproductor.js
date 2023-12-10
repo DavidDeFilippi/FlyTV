@@ -46,4 +46,11 @@ function getListeners(){
         break;
     }
   });
+
+  hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
+
+    console.log(data);
+
+    document.getElementById('video').style.backgroundImage="none";
+  });
 }

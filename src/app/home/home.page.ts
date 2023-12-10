@@ -43,7 +43,12 @@ export class HomePage {
 
   async ionViewWillEnter() {
     this.lockToPortrait();
-    this.initialize();
+    if(this.globalVar.getNumberForAds() % 2 != 0){
+      this.initialize();
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    }else{
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    }
     new VideoHls('', 'stop');
     this.getChannels();
 
