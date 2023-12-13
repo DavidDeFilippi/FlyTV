@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" color="reproductor">
+<ion-content [fullscreen]="true" color="dark">
 
   <style>
     #video {
@@ -9,8 +9,13 @@
       background-position: center;
       background-color: black !important;
     }
+    video::-webkit-media-controls-fullscreen-button,
+    video::-webkit-media-controls-mute-button{
+      display: none !important;
+    }
+    
   </style>
     
-  <video id="video" poster="../../assets/transparent.png"></video>
+  <video id="video" poster="../../assets/transparent.png" autoplay></video>
 
 </ion-content>

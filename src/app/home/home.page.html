@@ -14,7 +14,7 @@
     <p>Y listo!</p>
     <ion-img src="assets/instrucciones/cargandocanal.png"></ion-img>
 
-    <p style="font-style: italic; font-size: 12px;">* Algunos canales pueden demorar en conectar dependiendo de la conexion que haya en el momento</p>
+    <p style="font-style: italic; font-size: 12px;" (click)="bounceBaloon()">* Algunos canales pueden demorar en conectar dependiendo de la conexion que haya en el momento</p>
 
   </ion-content>
 </ion-menu>
@@ -25,17 +25,28 @@
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title class="ion-text-center" size="large">Fly TV <img src="assets/icon/logo-icon.png"
+      <ion-title class="ion-text-center" size="large">Fly TV<img src="assets/icon/logo-icon.png"
           style="width: 30px;"></ion-title>
     </ion-toolbar>
     <ion-list color="light" class="ion-text-capitalize">
-      <ion-item color="light" class="ion-text-capitalize">
-        <ion-select class="ion-text-capitalize" color="light" aria-label="Fruit" interface="popover"
-          placeholder="Seleccione una categoria" [innerHTML]="htmlSelectOption" (ionChange)="handleChange($event)">
-          <!-- <ion-select-option color="dark" *ngfor="let canal of canales" [value]="canal.name">{{canal.name}}</ion-select-option> -->
-        </ion-select>
+      <ion-item color="light">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="11">
+              <ion-select class="ion-text-capitalize" color="light" style="width: 80%;" aria-label="Fruit" interface="popover"
+                placeholder="Seleccione una categoria" [innerHTML]="htmlSelectOption" (ionChange)="handleChange($event)">
+                <!-- <ion-select-option color="dark" *ngfor="let canal of canales" [value]="canal.name">{{canal.name}}</ion-select-option> -->
+              </ion-select>
+            </ion-col>
+            <ion-col class="ion-text-right" class="vertical-center" style="font-size: 25px;" size="1" (click)="getChannels()"> 
+                <i class="fa-solid fa-rotate-right"></i>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </ion-item>
     </ion-list>
+
+
   </ion-header>
 
   <ion-content>

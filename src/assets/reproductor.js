@@ -44,7 +44,8 @@ function getListeners(){
   hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
 
     // console.log(data);
+    
+    video.setAttribute("controls","");
 
-    document.getElementById('video').style.backgroundImage="none";
   });
 }

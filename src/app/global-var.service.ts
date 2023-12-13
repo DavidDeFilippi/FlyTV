@@ -9,6 +9,7 @@ export class GlobalVarService {
 
   private globalCategory: string = '';
   private numberForAds: number = 1;
+  private firstLoadingChannels: boolean = true;
 
   public getGlobalCategory() {
     return this.globalCategory;
@@ -24,6 +25,14 @@ export class GlobalVarService {
 
   public setNumberForAds(numberForAds: any) {
     this.numberForAds = numberForAds;
+  }
+
+  public getFirstLoadingChannels() {
+    return this.firstLoadingChannels;
+  }
+
+  public setFirstLoadingChannels(firstLoadingChannels: boolean) {
+    this.firstLoadingChannels = firstLoadingChannels;
   }
 
 }

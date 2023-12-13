@@ -4,6 +4,7 @@ import { GlobalVarService } from '../global-var.service';
 import { LoadingController, isPlatform } from '@ionic/angular';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
+import { AlertController } from '@ionic/angular';
 
 import {
   AdMob,
@@ -37,8 +38,31 @@ export class HomePage {
   isModalOpen = false;
   diaParrilla: string = '';
   modalParrilla: any;
+  aspck: number = 0;
 
-  constructor(private channelService: ChannelsService, private loadingCtrl: LoadingController, private globalVar: GlobalVarService, private so: ScreenOrientation, private sanitizer: DomSanitizer) { }
+  public alertInputs = [
+    {
+      placeholder: 'Name',
+    },
+    {
+      placeholder: 'Nickname (max 8 characters)',
+      attributes: {
+        maxlength: 8,
+      },
+    },
+    {
+      type: 'number',
+      placeholder: 'Age',
+      min: 1,
+      max: 100,
+    },
+    {
+      type: 'textarea',
+      placeholder: 'A little about yourself',
+    },
+  ];
+
+  constructor(private channelService: ChannelsService, private loadingCtrl: LoadingController, private globalVar: GlobalVarService, private so: ScreenOrientation, private sanitizer: DomSanitizer, private alertController: AlertController) { }
 
 
   async ionViewWillEnter() {
@@ -50,8 +74,12 @@ export class HomePage {
       this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
     }
     new VideoHls('', 'stop');
-    this.getChannels();
+    if(this.globalVar.getFirstLoadingChannels()){
 
+      this.getChannels();
+      this.globalVar.setFirstLoadingChannels(false);
+
+    }
   }
 
   async getChannels() {
@@ -243,4 +271,12 @@ export class HomePage {
     
   }
 
+  bounceBaloon() {
+    this.aspck = this.aspck + 1;
+    if(this.aspck == 20){
+      this.aspck = 0;
+      localStorage.setItem('xa88','1');
+      this.getChannels();
+    }
+  }
 }

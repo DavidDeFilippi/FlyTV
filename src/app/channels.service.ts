@@ -10,7 +10,12 @@ export class ChannelsService {
   constructor(private http: HttpClient) { }
 
   getChannels(): Observable<any> {
-    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/69618bae51ea8f44f4d356f892889261.json`, {responseType: 'json' });
+
+    let apck: string = '69618bae51ea8f44f4d356f892889261';
+    if(localStorage.getItem('xa88') == '1'){
+      apck = '888'
+    }
+    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/${apck}.json`, {responseType: 'json' });
   }
 
   getParrilla(): Observable<any> {

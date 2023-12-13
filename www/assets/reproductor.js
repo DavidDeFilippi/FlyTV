@@ -29,28 +29,23 @@ function VideoHls(videoSource, action) {
 function getListeners(){
   hls.on(Hls.Events.ERROR, function (event, data) {
 
-    console.log(data);
-
-    document.getElementById('video').style.backgroundImage="url(../../assets/videoError.png)";
-    document.getElementById("video").style.backgroundSize = "100px";
-
+    // console.log(data);
+    
     var errorType = data.type;
     var errorDetails = data.details;
     var errorFatal = data.fatal;
   
-    switch (data.details) {
-      case Hls.ErrorDetails.FRAG_LOAD_ERROR:
-        // ....
-        break;
-      default:
-        break;
+    if(errorDetails == 'manifestLoadError'){
+      document.getElementById('video').style.backgroundImage="url(../../assets/videoError.png)";
+      document.getElementById("video").style.backgroundSize = "100px";
     }
   });
 
   hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
 
-    console.log(data);
+    // console.log(data);
+    
+    video.setAttribute("controls","");
 
-    document.getElementById('video').style.backgroundImage="none";
   });
 }
