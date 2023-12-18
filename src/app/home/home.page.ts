@@ -5,6 +5,8 @@ import { LoadingController, isPlatform } from '@ionic/angular';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AlertController } from '@ionic/angular';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Platform } from '@ionic/angular';
 
 import {
   AdMob,
@@ -40,33 +42,22 @@ export class HomePage {
   modalParrilla: any;
   aspck: number = 0;
 
-  public alertInputs = [
-    {
-      placeholder: 'Name',
-    },
-    {
-      placeholder: 'Nickname (max 8 characters)',
-      attributes: {
-        maxlength: 8,
-      },
-    },
-    {
-      type: 'number',
-      placeholder: 'Age',
-      min: 1,
-      max: 100,
-    },
-    {
-      type: 'textarea',
-      placeholder: 'A little about yourself',
-    },
-  ];
-
-  constructor(private channelService: ChannelsService, private loadingCtrl: LoadingController, private globalVar: GlobalVarService, private so: ScreenOrientation, private sanitizer: DomSanitizer, private alertController: AlertController) { }
-
+  constructor(private channelService: ChannelsService, 
+              private loadingCtrl: LoadingController, 
+              private globalVar: GlobalVarService, 
+              private so: ScreenOrientation, 
+              private sanitizer: DomSanitizer, 
+              private alertController: AlertController,
+              private platform: Platform) { }
 
   async ionViewWillEnter() {
+
     this.lockToPortrait();
+
+    this.platform.ready().then(() => {
+      StatusBar.show();
+    });
+
     if(this.globalVar.getNumberForAds() % 2 != 0){
       this.initialize();
       this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);

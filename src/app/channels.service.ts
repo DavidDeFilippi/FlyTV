@@ -21,4 +21,12 @@ export class ChannelsService {
   getParrilla(): Observable<any> {
     return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/4f43dd901c609825ca8107062b0c8178.json`, {responseType: 'json' });
   }
+
+  getChilevision(): Observable<any> {
+    return this.http.get(`https://www.chilevision.cl:8080/token.php/ms_player_src_01/live_1/63ee47e1daeeb80a30d98ef4/1702807971649.json`, {responseType: 'json' });
+  }
+
+  getCanal13(): Observable<any> {
+    return this.http.get(`https://us-central1-canal-13-stream-api.cloudfunctions.net/media/token`, {responseType: 'json' });
+  }
 }
