@@ -49,7 +49,7 @@ export class ReproductorPage implements OnInit {
           break;
 
           case 'canal13':
-            this.channelService.getChilevision().subscribe((data) =>{
+            this.channelService.getCanal13().subscribe((data) =>{
               let t = data;
               this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.token;
             });
