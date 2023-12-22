@@ -25,7 +25,8 @@ export class ReproductorPage implements OnInit {
 
   ngOnInit() {
     this.unlockScreenOrientation();
-
+    
+    //:::::::: STATUS BAR ::::::::::
     this.platform.ready().then(() => {
         StatusBar.hide();
       });
@@ -42,20 +43,22 @@ export class ReproductorPage implements OnInit {
       }
       switch (this.channel.id) {
         case 'chilevision':
-            this.channelService.getChilevision().subscribe((data) =>{
-              let t = data;
-              this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token='+t.token;
-            });
-          break;
-
-          case 'canal13':
-            this.channelService.getCanal13().subscribe((data) =>{
-              let t = data;
-              this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.token;
-            });
-          break;
+          this.channelService.getChilevision().subscribe((data) =>{
+            let t = data;
+            this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token='+t.token;
+            new VideoHls(this.channel.url, 'play');
+          });
+        break;
+        case 'canal13':
+          this.channelService.getCanal13().subscribe((data) =>{
+            let t = data;
+            this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.data.authToken;
+            new VideoHls(this.channel.url, 'play');
+          });
+        break;
+        default:
+          new VideoHls(this.channel.url, 'play');
       }
-      new VideoHls(this.channel.url, 'play');
     });  
     
   }
@@ -73,6 +76,4 @@ export class ReproductorPage implements OnInit {
     unlockScreenOrientation(){
       this.so.unlock();
     }
-
-    //:::::::: STATUS BAR ::::::::::
 }
