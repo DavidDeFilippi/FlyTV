@@ -25,8 +25,21 @@
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title class="ion-text-center" size="large">Fly TV<img src="assets/icon/logo-icon.png"
-          style="width: 30px;"></ion-title>
+      <ion-title class="ion-text-center" size="large">
+        <ion-grid>
+          <ion-row>
+            <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png" style="width: 22px;"></ion-col>
+            <ion-col class="ion-text-right" size="auto">
+              <i class="fa-brands fa-chromecast" style="font-size: 22px;" id="click-trigger"></i>
+            </ion-col >
+          </ion-row>
+        </ion-grid>
+        <!-- 
+          <ion-title>
+            
+          </ion-title> -->
+        </ion-title>
+          
     </ion-toolbar>
     <ion-list color="light" class="ion-text-capitalize">
       <ion-item color="light">
@@ -53,13 +66,13 @@
 
     <ion-list *ngFor="let channel of channels">
         <ion-item color="dark" *ngIf="channel.enabled">
-          <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" [routerLink]="channel.iframe ? ['/iframe'] : ['/reproductor']" [queryParams]="{id: channel.id}">{{channel.name}}
+          <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" [routerLink]="channel.iframe ? ['/iframe'] : ['/reproductor']" [queryParams]="{id: channel.id, current: channel.transmitiendo.current ? channel.transmitiendo.current : '', next: channel.transmitiendo.next ? channel.transmitiendo.next : ''}">{{channel.name}}
 
-            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: aquamarine;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px;    color: aquamarine;" (click)="setOpen(true, channel)"><p expand="block">ver programacion</p></ion-label>
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block">ver programacion</p></ion-label>
         </ion-item>
     </ion-list>
     
@@ -78,7 +91,7 @@
           <h4 class="ion-text-center">{{channelModal.diaParrilla}}</h4>
 
           <ion-list *ngFor="let p of modalParrilla">
-            <ion-item>
+            <ion-item color="medium" lines="none" *ngIf="p.horaNormal + ' '+p.programa === modalParrilla.current.current">
               <ion-label>
                 {{p.horaNormal}}
               </ion-label>
@@ -86,9 +99,42 @@
                 {{p.programa}}
               </ion-label>
             </ion-item>
+
+            <ion-item *ngIf="p.horaNormal + ' '+p.programa !== modalParrilla.current.current">
+              <ion-label>
+                {{p.horaNormal}}
+              </ion-label>
+              <ion-label>
+                {{p.programa}}
+              </ion-label>
+            </ion-item>
+
           </ion-list>
         </ion-content>
       </ng-template>
     </ion-modal>
+
+    <ion-popover trigger="click-trigger" triggerAction="click">
+      <ng-template>
+        <ion-content class="ion-padding">
+
+          <h4>Conectar a Chromecast</h4>
+
+          <p>En el reproductor, selecciona el icono de compartir. <ion-icon name="share-social-outline" ></ion-icon></p>
+
+          <p>Selecciona un reproductor de video compatible con chromecast. Recomendamos VLC for Android, pero también puedes usar tu reproductor favorito.</p>
+
+          <a href="https://play.google.com/store/apps/details?id=org.videolan.vlc" target="_blank" class="ion-text-center" style="color: #fff;">
+            <p>VLC for Android</p>
+            <div>
+              <img style="width: 35px; border-radius: 10px; margin-right: 5px;" src="https://play-lh.googleusercontent.com/nPnJc260PPoupBe-DcVQ-MNr6149dphdEoEAN-C9xwgctpVXbwsuyon_jEZ3uPWWYQ=w240-h480-rw">
+              <img style="height: 35px;" src="https://www.videolan.org/images/get_it_on_play_logo_large.png">
+            </div>
+
+          </a>
+        
+        </ion-content>
+      </ng-template>
+    </ion-popover>
 
   </ion-content>

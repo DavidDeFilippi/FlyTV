@@ -4,6 +4,8 @@ import { ChannelsService } from '../channels.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
+import { Share } from '@capacitor/share';
 
 declare var VideoHls: any;
 
@@ -18,10 +20,13 @@ export class ReproductorPage implements OnInit {
   id: any;
   channel: any;
   channels: any;
+  current: any;
+  next: any;
   constructor(private channelService: ChannelsService,
               private activatedRoute: ActivatedRoute, 
               private so: ScreenOrientation,
-              private platform: Platform) { }
+              private platform: Platform,
+              private toastController: ToastController) { }
 
   ngOnInit() {
     this.unlockScreenOrientation();
@@ -32,6 +37,8 @@ export class ReproductorPage implements OnInit {
       });
       
     this.id = this.activatedRoute.snapshot.queryParamMap.get('id');
+    this.current = this.activatedRoute.snapshot.queryParamMap.get('current');
+    this.next = this.activatedRoute.snapshot.queryParamMap.get('next');
 
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
@@ -47,6 +54,7 @@ export class ReproductorPage implements OnInit {
             let t = data;
             this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token='+t.token;
             new VideoHls(this.channel.url, 'play');
+            this.presentToast('bottom');
           });
         break;
         case 'canal13':
@@ -54,10 +62,12 @@ export class ReproductorPage implements OnInit {
             let t = data;
             this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.data.authToken;
             new VideoHls(this.channel.url, 'play');
+            this.presentToast('bottom');
           });
         break;
         default:
           new VideoHls(this.channel.url, 'play');
+          this.presentToast('bottom');
       }
     });  
     
@@ -76,4 +86,28 @@ export class ReproductorPage implements OnInit {
     unlockScreenOrientation(){
       this.so.unlock();
     }
+
+    //muestra la info del canal al entrar
+    async presentToast(position: 'top' | 'middle' | 'bottom') {
+      const toast = await this.toastController.create({
+        header: this.channel.name,
+        message: this.current !== '' ? '- ' + this.current.slice(6) + '<br>- '+ this.next : '',
+        duration: 3000,
+        position: position,
+        color: 'light',
+        cssClass: 'custom-toast'
+      });
+  
+      await toast.present();
+    }
+
+    async openChannelUrl(){
+      // window.open(this.channel.url, "_blank");
+      await Share.share({
+        title: 'Selecciona aplicacion de video',
+        url: this.channel.url,
+        dialogTitle: 'Selecciona aplicacion de video',
+      });
+    }
+
 }

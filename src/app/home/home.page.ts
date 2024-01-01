@@ -130,7 +130,7 @@ export class HomePage {
       }
 
       if (today > inicio && today < fin) {
-        y = inicio.toLocaleTimeString().slice(0, -3) + ' ' + x[i].programa + '';
+        y = x[i].horaNormal + ' ' + x[i].programa + '';
       }
 
     }
@@ -146,10 +146,10 @@ export class HomePage {
       const fin = new Date(x[i + 1].hora);
 
       if (today > inicio && today < fin) {
-        y = fin.toLocaleTimeString().slice(0, -3) + ' ' + x[i + 1].programa + '';
+        y = x[i + 1].horaNormal + ' ' + x[i + 1].programa + '';
       }
     }
-    this.diaParrilla = new Date(x[0].hora).toLocaleDateString()
+    this.diaParrilla = new Date(x[0].hora).toLocaleDateString();
     return y;
   }
 
@@ -254,6 +254,7 @@ export class HomePage {
       this.channelModal.diaParrilla = this.diaParrilla;
       this.modalParrilla = this.channelModal.parrilla;
       this.isModalOpen = isOpen;
+      this.modalParrilla.current = ch.transmitiendo;
     }else{
       this.isModalOpen = isOpen;
       this.channelModal = [];

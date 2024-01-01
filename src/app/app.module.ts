@@ -14,7 +14,7 @@ import {ScreenOrientation} from '@ionic-native/screen-orientation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [CommonModule,BrowserModule, IonicModule.forRoot(), AppRoutingModule, SafePipeModule, HttpClientModule],
+  imports: [CommonModule,BrowserModule, IonicModule.forRoot({ innerHTMLTemplatesEnabled: true }), AppRoutingModule, SafePipeModule, HttpClientModule],
   providers: [ScreenOrientation, { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
