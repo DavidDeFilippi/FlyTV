@@ -25,19 +25,15 @@
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
       </ion-buttons>
-      <ion-title class="ion-text-center" size="large">
-        <ion-grid>
+      <ion-title class="ion-text-center" size="large" style="padding: 0;">
+        <ion-grid style="padding: 0;">
           <ion-row>
-            <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png" style="width: 22px;"></ion-col>
-            <ion-col class="ion-text-right" size="auto">
-              <i class="fa-brands fa-chromecast" style="font-size: 22px;" id="click-trigger"></i>
-            </ion-col >
-          </ion-row>
-        </ion-grid>
-        <!-- 
-          <ion-title>
-            
-          </ion-title> -->
+            <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png" style="width: 22px;margin-right: 10px;"></ion-col>
+              <ion-col class="ion-text-right" size="auto" >
+                <i class="fa-brands fa-chromecast" style="font-size: 22px; margin-right: 10px;" id="click-trigger"></i>
+              </ion-col >
+            </ion-row>
+          </ion-grid>
         </ion-title>
           
     </ion-toolbar>
@@ -48,7 +44,6 @@
             <ion-col size="11">
               <ion-select class="ion-text-capitalize" color="light" style="width: 80%;" aria-label="Fruit" interface="popover"
                 placeholder="Seleccione una categoria" [innerHTML]="htmlSelectOption" (ionChange)="handleChange($event)">
-                <!-- <ion-select-option color="dark" *ngfor="let canal of canales" [value]="canal.name">{{canal.name}}</ion-select-option> -->
               </ion-select>
             </ion-col>
             <ion-col class="ion-text-right" class="vertical-center" style="font-size: 25px;" size="1" (click)="getChannels()"> 
@@ -58,7 +53,6 @@
         </ion-grid>
       </ion-item>
     </ion-list>
-
 
   </ion-header>
 
@@ -72,7 +66,7 @@
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block">ver programacion</p></ion-label>
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p></ion-label>
         </ion-item>
     </ion-list>
     
@@ -88,25 +82,25 @@
           </ion-toolbar>
         </ion-header>
         <ion-content class="ion-padding">
-          <h4 class="ion-text-center">{{channelModal.diaParrilla}}</h4>
+          <h4 class="ion-text-center">{{channelModal.dia}} {{channelModal.numeroDia}} de {{channelModal.mes}} del {{channelModal.year}}</h4>
 
           <ion-list *ngFor="let p of modalParrilla">
             <ion-item color="medium" lines="none" *ngIf="p.horaNormal + ' '+p.programa === modalParrilla.current.current">
-              <ion-label>
-                {{p.horaNormal}}
-              </ion-label>
-              <ion-label>
-                {{p.programa}}
-              </ion-label>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="auto">{{p.horaNormal}}</ion-col>
+                  <ion-col>{{p.programa}}</ion-col>
+                </ion-row>
+              </ion-grid>
             </ion-item>
 
             <ion-item *ngIf="p.horaNormal + ' '+p.programa !== modalParrilla.current.current">
-              <ion-label>
-                {{p.horaNormal}}
-              </ion-label>
-              <ion-label>
-                {{p.programa}}
-              </ion-label>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="auto">{{p.horaNormal}}</ion-col>
+                  <ion-col>{{p.programa}}</ion-col>
+                </ion-row>
+              </ion-grid>
             </ion-item>
 
           </ion-list>

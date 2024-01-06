@@ -39,6 +39,9 @@ export class HomePage {
   channelModal: any;
   isModalOpen = false;
   diaParrilla: string = '';
+  diaNombreyMesParrilla: any;
+  nombreDias = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+  nombreMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   modalParrilla: any;
   aspck: number = 0;
 
@@ -150,6 +153,7 @@ export class HomePage {
       }
     }
     this.diaParrilla = new Date(x[0].hora).toLocaleDateString();
+    this.diaNombreyMesParrilla = {dia: this.nombreDias[new Date(x[0].hora).getDay()], numeroDia: new Date(x[0].hora).getDate(), mes: this.nombreMeses[new Date(x[0].hora).getMonth()], year: new Date(x[0].hora).getFullYear()};
     return y;
   }
 
@@ -252,15 +256,18 @@ export class HomePage {
     if(isOpen){
       this.channelModal = ch;
       this.channelModal.diaParrilla = this.diaParrilla;
+      this.channelModal.dia = this.diaNombreyMesParrilla.dia;
+      this.channelModal.numeroDia = this.diaNombreyMesParrilla.numeroDia;
+      this.channelModal.mes = this.diaNombreyMesParrilla.mes;
+      this.channelModal.year = this.diaNombreyMesParrilla.year;
       this.modalParrilla = this.channelModal.parrilla;
       this.isModalOpen = isOpen;
       this.modalParrilla.current = ch.transmitiendo;
     }else{
       this.isModalOpen = isOpen;
-      this.channelModal = [];
       this.modalParrilla = [];
-    }
-    
+      this.channelModal = [];
+    } 
   }
 
   bounceBaloon() {
