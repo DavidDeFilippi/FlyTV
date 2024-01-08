@@ -59,7 +59,7 @@
   <ion-content>
 
     <ion-list *ngFor="let channel of channels">
-        <ion-item color="dark" *ngIf="channel.enabled">
+        <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('https')">
           <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" [routerLink]="channel.iframe ? ['/iframe'] : ['/reproductor']" [queryParams]="{id: channel.id, current: channel.transmitiendo.current ? channel.transmitiendo.current : '', next: channel.transmitiendo.next ? channel.transmitiendo.next : ''}">{{channel.name}}
 
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
@@ -68,6 +68,18 @@
           </ion-label>
           <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p></ion-label>
         </ion-item>
+
+
+        <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('http:')">
+          <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" (click)="openChannelUrl(channel.url)">{{channel.name}}
+
+            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+            <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
+
+          </ion-label>
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p></ion-label>
+        </ion-item>
+
     </ion-list>
     
     <ion-modal [isOpen]="isModalOpen" (willDismiss)="setOpen(false)">

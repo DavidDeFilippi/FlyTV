@@ -7,6 +7,7 @@ import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AlertController } from '@ionic/angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
+import { Share } from '@capacitor/share';
 
 import {
   AdMob,
@@ -277,5 +278,14 @@ export class HomePage {
       localStorage.setItem('xa88','1');
       this.getChannels();
     }
+  }
+
+  //Share para compartir a apps externas
+  async openChannelUrl(url: string){
+    await Share.share({
+      title: 'Selecciona aplicacion de video',
+      url: url,
+      dialogTitle: 'Selecciona aplicacion de video',
+    });
   }
 }
