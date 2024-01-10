@@ -1,11 +1,11 @@
 var video;
 var hls;
 
-function VideoHls(videoSource, action) {
+function VideoHls(videoSource, action, isMobile) {
   if (Hls.isSupported() && videoSource != '' && action == 'play') {
     video = document.getElementById('video');
     hls = new Hls();
-    getListeners();
+    getListeners(isMobile);
     hls.loadSource(videoSource);
     hls.attachMedia(video);
     video.play();
@@ -26,7 +26,7 @@ function VideoHls(videoSource, action) {
   }
 }
 
-function getListeners(){
+function getListeners(isMobile){
   hls.on(Hls.Events.ERROR, function (event, data) {
     
     var errorType = data.type;
@@ -42,7 +42,8 @@ function getListeners(){
   hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
     
     document.getElementById('video').style.backgroundImage = "none";
-    video.setAttribute("controls","");
-
+    if(isMobile){
+      video.setAttribute("controls","");
+    }
   });
 }

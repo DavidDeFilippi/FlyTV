@@ -16,11 +16,13 @@
 
     <p style="font-style: italic; font-size: 12px;" (click)="bounceBaloon()">* Algunos canales pueden demorar en conectar dependiendo de la conexion que haya en el momento</p>
 
+    
+
   </ion-content>
 </ion-menu>
 
 <div class="ion-page" id="main-content">
-  <ion-header>
+  <ion-header *ngIf="isMobile">
     <ion-toolbar color="dark">
       <ion-buttons slot="start">
         <ion-menu-button></ion-menu-button>
@@ -57,6 +59,41 @@
   </ion-header>
 
   <ion-content>
+
+    <ion-header *ngIf="!isMobile">
+      <ion-toolbar color="dark">
+        <ion-buttons slot="start" *ngIf="isMobile">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center" size="large" style="padding: 0;">
+          <ion-grid style="padding: 0;">
+            <ion-row>
+              <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png" style="width: 22px;margin-right: 10px;"></ion-col>
+                <ion-col class="ion-text-right" size="auto" >
+                </ion-col >
+              </ion-row>
+            </ion-grid>
+          </ion-title>
+            
+      </ion-toolbar>
+      <ion-list color="light" class="ion-text-capitalize">
+        <ion-item color="light">
+          <ion-grid>
+            <ion-row>
+              <ion-col size="11">
+                <ion-select class="ion-text-capitalize" color="light" style="width: 80%;" aria-label="Fruit" interface="popover"
+                  placeholder="Seleccione una categoria" [innerHTML]="htmlSelectOption" (ionChange)="handleChange($event)">
+                </ion-select>
+              </ion-col>
+              <ion-col class="ion-text-right" class="vertical-center" style="font-size: 25px;" size="1" (click)="getChannels()"> 
+                  <i class="fa-solid fa-rotate-right"></i>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+      </ion-list>
+  
+    </ion-header>
 
     <ion-list *ngFor="let channel of channels">
         <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('https')">
@@ -97,7 +134,7 @@
           <h4 class="ion-text-center">{{channelModal.dia}} {{channelModal.numeroDia}} de {{channelModal.mes}} del {{channelModal.year}}</h4>
 
           <ion-list *ngFor="let p of modalParrilla">
-            <ion-item color="medium" lines="none" *ngIf="p.horaNormal + ' '+p.programa === modalParrilla.current.current">
+            <ion-item color="medium" lines="none" *ngIf="p.horaNormal + ' '+p.programa === modalParrilla.current.current" (click)="emptyFunction()">
               <ion-grid>
                 <ion-row>
                   <ion-col size="auto">{{p.horaNormal}}</ion-col>
@@ -106,7 +143,7 @@
               </ion-grid>
             </ion-item>
 
-            <ion-item *ngIf="p.horaNormal + ' '+p.programa !== modalParrilla.current.current">
+            <ion-item *ngIf="p.horaNormal + ' '+p.programa !== modalParrilla.current.current" (click)="emptyFunction()">
               <ion-grid>
                 <ion-row>
                   <ion-col size="auto">{{p.horaNormal}}</ion-col>
@@ -120,7 +157,7 @@
       </ng-template>
     </ion-modal>
 
-    <ion-popover trigger="click-trigger" triggerAction="click">
+    <ion-popover *ngIf="isMobile" trigger="click-trigger" triggerAction="click">
       <ng-template>
         <ion-content class="ion-padding">
 

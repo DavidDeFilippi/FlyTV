@@ -45,6 +45,7 @@ export class HomePage {
   nombreMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   modalParrilla: any;
   aspck: number = 0;
+  isMobile: any;
 
   constructor(private channelService: ChannelsService, 
               private loadingCtrl: LoadingController, 
@@ -56,19 +57,24 @@ export class HomePage {
 
   async ionViewWillEnter() {
 
-    this.lockToPortrait();
+    this.isMobile = this.globalVar.isMobile();
 
-    this.platform.ready().then(() => {
-      StatusBar.show();
-    });
+    if(this.isMobile){
+      this.lockToPortrait();
 
-    if(this.globalVar.getNumberForAds() % 2 != 0){
-      this.initialize();
-      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-    }else{
-      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      if(this.globalVar.getNumberForAds() % 2 != 0){
+        this.initialize();
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      }else{
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      }
+
+      this.platform.ready().then(() => {
+        StatusBar.show();
+      });
     }
-    new VideoHls('', 'stop');
+
+    new VideoHls('', 'stop', this.isMobile);
     if(this.globalVar.getFirstLoadingChannels()){
 
       this.getChannels();
@@ -271,6 +277,15 @@ export class HomePage {
     } 
   }
 
+  //Share para compartir a apps externas
+  async openChannelUrl(url: string){
+    await Share.share({
+      title: 'Selecciona aplicacion de video',
+      url: url,
+      dialogTitle: 'Selecciona aplicacion de video',
+    });
+  }
+
   bounceBaloon() {
     this.aspck = this.aspck + 1;
     if(this.aspck == 20){
@@ -280,12 +295,8 @@ export class HomePage {
     }
   }
 
-  //Share para compartir a apps externas
-  async openChannelUrl(url: string){
-    await Share.share({
-      title: 'Selecciona aplicacion de video',
-      url: url,
-      dialogTitle: 'Selecciona aplicacion de video',
-    });
+  emptyFunction(){
+
   }
+
 }

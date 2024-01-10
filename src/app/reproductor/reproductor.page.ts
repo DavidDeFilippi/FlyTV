@@ -6,6 +6,8 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { Share } from '@capacitor/share';
+import { GlobalVarService } from '../global-var.service';
+
 
 declare var VideoHls: any;
 
@@ -22,19 +24,25 @@ export class ReproductorPage implements OnInit {
   channels: any;
   current: any;
   next: any;
+  isMobile: any;
   constructor(private channelService: ChannelsService,
               private activatedRoute: ActivatedRoute, 
               private so: ScreenOrientation,
               private platform: Platform,
-              private toastController: ToastController) { }
+              private toastController: ToastController,
+              private globalVar: GlobalVarService) { }
 
   ngOnInit() {
-    this.unlockScreenOrientation();
-    
-    //:::::::: STATUS BAR ::::::::::
-    this.platform.ready().then(() => {
+
+    this.isMobile = this.globalVar.isMobile();
+
+    if(this.isMobile){
+      this.unlockScreenOrientation();
+      //:::::::: STATUS BAR ::::::::::
+      this.platform.ready().then(() => {
         StatusBar.hide();
       });
+    }
       
     this.id = this.activatedRoute.snapshot.queryParamMap.get('id');
     this.current = this.activatedRoute.snapshot.queryParamMap.get('current');
@@ -53,7 +61,7 @@ export class ReproductorPage implements OnInit {
           this.channelService.getChilevision().subscribe((data) =>{
             let t = data;
             this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token='+t.token;
-            new VideoHls(this.channel.url, 'play');
+            new VideoHls(this.channel.url, 'play', this.isMobile);
             this.presentToast('bottom');
           });
         break;
@@ -61,12 +69,12 @@ export class ReproductorPage implements OnInit {
           this.channelService.getCanal13().subscribe((data) =>{
             let t = data;
             this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.data.authToken;
-            new VideoHls(this.channel.url, 'play');
+            new VideoHls(this.channel.url, 'play', this.isMobile);
             this.presentToast('bottom');
           });
         break;
         default:
-          new VideoHls(this.channel.url, 'play');
+          new VideoHls(this.channel.url, 'play', this.isMobile);
           this.presentToast('bottom');
       }
     });  

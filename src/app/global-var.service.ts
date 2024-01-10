@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalVarService {
 
-  constructor() { }
+  constructor(private platform: Platform) { }
 
   private globalCategory: string = '';
   private numberForAds: number = 1;
@@ -33,6 +34,14 @@ export class GlobalVarService {
 
   public setFirstLoadingChannels(firstLoadingChannels: boolean) {
     this.firstLoadingChannels = firstLoadingChannels;
+  }
+
+  public isMobile(){
+    if(this.platform.platforms().includes('mobile')){
+      return true;
+    }else{
+      return false;
+    }
   }
 
 }
