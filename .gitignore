@@ -4,7 +4,6 @@
 /dist
 /tmp
 /out-tsc
-/www
 
 # dependencies
 /node_modules
@@ -39,3 +38,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Folders
+www/
