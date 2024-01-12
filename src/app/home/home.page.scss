@@ -29,6 +29,7 @@
 a{
   text-decoration: none;
   text-align: center;
+  color: #fff;
 }
 div a:hover > ion-item > ion-label{
   color: #98E4FF;
@@ -56,4 +57,12 @@ ion-select{
 
 .vertical-center {
   margin-top: 12px;
+}
+
+ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
+  color: rgb(255, 190, 69) !important;
+  outline: none;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
 }

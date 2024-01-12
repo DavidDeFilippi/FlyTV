@@ -167,9 +167,28 @@ export class HomePage {
   async getCategory(c: string) {
     
     if (c === 'todos' || c === '' || c === undefined) {
-      this.globalVar.setGlobalCategory('todos');
-      for (let i = 0; i < this.channels.length; i++) {
-        this.channels[i].enabled = true;
+      if(this.isMobile){
+
+        this.globalVar.setGlobalCategory('todos');
+
+        for (let i = 0; i < this.channels.length; i++) {
+          this.channels[i].enabled = true;
+        }
+
+      }else{
+        this.globalVar.setGlobalCategory(this.categories[0]);
+
+        this.category = this.globalVar.getGlobalCategory();
+
+        for (let i = 0; i < this.channels.length; i++) {
+          if (this.channels[i].categoria === this.globalVar.getGlobalCategory()) {
+            this.channels[i].enabled = true;
+          } else {
+            this.channels[i].enabled = false;
+          }
+  
+        }
+
       }
 
     } else {
@@ -182,16 +201,22 @@ export class HomePage {
         }
 
       }
-    }
-    this.globalVar.setGlobalCategory(c);
 
-    this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
+      this.category = c;
 
-    for (var x of this.categories) {
-      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
     }
     
-    this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
+    this.globalVar.setGlobalCategory(c);
+
+    if(this.isMobile){
+      this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
+
+      for (var x of this.categories) {
+        this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
+      }
+      
+      this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
+    }
   }
 
   async listCategories() {
@@ -296,7 +321,7 @@ export class HomePage {
   }
 
   emptyFunction(){
-
+    return false;
   }
 
 }
