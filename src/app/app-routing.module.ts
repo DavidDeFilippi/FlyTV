@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
+//Mobile
+
 const routes: Routes = [
   {
     path: 'home',
@@ -20,6 +22,23 @@ const routes: Routes = [
     loadChildren: () => import('./iframe/iframe.module').then( m => m.IframePageModule)
   },
 ];
+
+//Desktop
+
+// const routes: Routes = [
+//   {
+//     path: '',
+//     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+//   },
+//   {
+//     path: 'reproductor',
+//     loadChildren: () => import('./reproductor/reproductor.module').then( m => m.ReproductorPageModule)
+//   },
+//   {
+//     path: 'iframe',
+//     loadChildren: () => import('./iframe/iframe.module').then( m => m.IframePageModule)
+//   },
+// ];
 
 @NgModule({
   imports: [

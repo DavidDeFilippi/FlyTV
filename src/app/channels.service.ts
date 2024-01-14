@@ -29,4 +29,8 @@ export class ChannelsService {
   getCanal13(): Observable<any> {
     return this.http.get(`https://us-central1-canal-13-stream-api.cloudfunctions.net/media/token`, {responseType: 'json' });
   }
+
+  getStatusChannels(): Observable<any> {
+    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/estadoCanales.json`, {responseType: 'json' });
+  }
 }

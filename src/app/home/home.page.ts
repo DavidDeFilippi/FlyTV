@@ -46,6 +46,7 @@ export class HomePage {
   modalParrilla: any;
   aspck: number = 0;
   isMobile: any;
+  statusChannels: any;
 
   constructor(private channelService: ChannelsService, 
               private loadingCtrl: LoadingController, 
@@ -77,10 +78,17 @@ export class HomePage {
     new VideoHls('', 'stop', this.isMobile);
     if(this.globalVar.getFirstLoadingChannels()){
 
-      this.getChannels();
+      await this.getChannels();
       this.globalVar.setFirstLoadingChannels(false);
 
     }
+    await this.getStatusChannels();
+    await this.getParrilla();
+
+    // setInterval(function () {
+    //   console.log('interval');
+    // }, 1000);
+
   }
 
   async getChannels() {
@@ -92,10 +100,22 @@ export class HomePage {
       this.channels = data;
       this.channelsBackUp = data;
       this.getParrilla();
+      this.getStatusChannels();
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
       loading.dismiss();
+    });
+  }
+
+  async getStatusChannels() {
+    this.channelService.getStatusChannels().subscribe((data) => {
+      this.statusChannels = data;
+      for (let i = 0; i < this.statusChannels.length; i++) {
+        if(this.channels[i].id == this.statusChannels[i].id){
+          this.channels[i].estado = this.statusChannels[i].estado;
+        }
+      }
     });
   }
 
