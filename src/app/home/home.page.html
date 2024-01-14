@@ -202,6 +202,18 @@
                 <p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p>
               </ion-label>
             </ion-item>
+
+            <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('http:')">
+              <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : 'red'}" name="ellipse" style="font-size: 11px; margin-right: 5px;"></ion-icon>
+              <ion-icon name="share-social-outline" style="font-size: 11px; margin-right: 10px;"></ion-icon>
+              <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id" (click)="openChannelUrl(channel.url)">{{channel.name}}
+    
+                <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline" style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+                <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
+    
+              </ion-label>
+              <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p></ion-label>
+            </ion-item>
           </ion-list>
 
         </ion-content>
