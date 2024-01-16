@@ -1,3 +1,5 @@
+<!-- INTERFAZ PARA MOVILES CELULARES Y TABLETS (Escritorio y Android TV mas abajo) -->
+
 <ion-content *ngIf="isMobile">
 
   <ion-menu contentId="main-content">
@@ -142,6 +144,8 @@
 
 </ion-content>
 
+<!-- INTERFAZ PARA ESCRITORIO Y ANDROID TV -->
+
 <ion-content class="ion-page" *ngIf="!isMobile">
 
   <ion-header>
@@ -184,6 +188,8 @@
         <ion-content class="ion-padding">
 
           <ion-list *ngFor="let channel of channels">
+
+            <!-- SI LOS ENLACES SON HTTPS SE PUEDEN VER DIRECTO DE LA APP -->
             <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('https')">
               <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : 'red'}" name="ellipse" style="font-size: 11px; margin-right: 10px;"></ion-icon>
               <img class="channel-logo" [src]="channel.logo"><ion-label [attr.id]="channel.id"
@@ -203,6 +209,7 @@
               </ion-label>
             </ion-item>
 
+            <!-- SI LOS ENLACES SON HTTP NO SE PUEDEN VER DIRECTO DE LA APP Y SE DEBEN COMPARTIR EN APP DE VIDEO EXTERNA -->
             <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('http:')">
               <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : 'red'}" name="ellipse" style="font-size: 11px; margin-right: 5px;"></ion-icon>
               <ion-icon name="share-social-outline" style="font-size: 11px; margin-right: 10px;"></ion-icon>
@@ -214,6 +221,7 @@
               </ion-label>
               <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;" (click)="setOpen(true, channel)"><p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon></p></ion-label>
             </ion-item>
+
           </ion-list>
 
         </ion-content>
