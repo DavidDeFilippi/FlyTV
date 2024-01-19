@@ -1,6 +1,15 @@
 var video;
 var hls;
 
+// document.addEventListener(
+//   "keydown",
+//   (event) => {
+//     console.log(event.key);
+//     document.getElementById('keycodelistener').innerHTML = event.key;
+//   },
+//   false,
+// );
+
 function VideoHls(videoSource, action, isMobile) {
   if (Hls.isSupported() && videoSource != '' && action == 'play') {
     video = document.getElementById('video');

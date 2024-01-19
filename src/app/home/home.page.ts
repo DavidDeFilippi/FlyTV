@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ChannelsService } from '../channels.service';
 import { GlobalVarService } from '../global-var.service';
 import { LoadingController, isPlatform } from '@ionic/angular';
@@ -8,6 +8,7 @@ import { AlertController } from '@ionic/angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
 import { Share } from '@capacitor/share';
+import { MenuController } from '@ionic/angular';
 
 import {
   AdMob,
@@ -47,6 +48,7 @@ export class HomePage {
   aspck: number = 0;
   isMobile: any;
   statusChannels: any;
+  DesktopMenuIsLocked: boolean = false;
 
   constructor(private channelService: ChannelsService, 
               private loadingCtrl: LoadingController, 
@@ -54,7 +56,17 @@ export class HomePage {
               private so: ScreenOrientation, 
               private sanitizer: DomSanitizer, 
               private alertController: AlertController,
-              private platform: Platform) { }
+              private platform: Platform,
+              private menuCtrl: MenuController) {}
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent){
+    if(event.key === 'ArrowLeft'){
+      this.DesktoptMenu(true);
+    }else if(event.key === 'ArrowRight'){
+      this.DesktoptMenu(false);
+    }
+  }
 
   async ionViewWillEnter() {
 
@@ -77,17 +89,11 @@ export class HomePage {
 
     new VideoHls('', 'stop', this.isMobile);
     if(this.globalVar.getFirstLoadingChannels()){
-
       await this.getChannels();
-      this.globalVar.setFirstLoadingChannels(false);
-
+    }else{
+      await this.getStatusChannels();
+      await this.getParrilla();
     }
-    await this.getStatusChannels();
-    await this.getParrilla();
-
-    // setInterval(function () {
-    //   console.log('interval');
-    // }, 1000);
 
   }
 
@@ -99,12 +105,15 @@ export class HomePage {
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
       this.channelsBackUp = data;
-      this.getParrilla();
-      this.getStatusChannels();
+      if(this.globalVar.getFirstLoadingChannels()){
+        this.getParrilla();
+        this.getStatusChannels();
+      }
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
       loading.dismiss();
+      this.globalVar.setFirstLoadingChannels(false);
     });
   }
 
@@ -315,10 +324,12 @@ export class HomePage {
       this.modalParrilla = this.channelModal.parrilla;
       this.isModalOpen = isOpen;
       this.modalParrilla.current = ch.transmitiendo;
+      this.DesktopMenuIsLocked = true;
     }else{
       this.isModalOpen = isOpen;
       this.modalParrilla = [];
       this.channelModal = [];
+      this.DesktopMenuIsLocked = false;
     } 
   }
 
@@ -338,6 +349,24 @@ export class HomePage {
       localStorage.setItem('xa88','1');
       this.getChannels();
     }
+  }
+
+  DesktoptMenu(x: boolean) {
+    if(!this.DesktopMenuIsLocked){
+      if(x){
+        this.menuCtrl.open('first-menu');
+      }else{
+        this.menuCtrl.close('first-menu');
+      }
+    }
+  }
+
+  blockDesktopMenu(x: boolean){
+      if(x){
+        this.DesktopMenuIsLocked = true;
+      }else{
+        this.DesktopMenuIsLocked = false;
+      }
   }
 
   emptyFunction(){
