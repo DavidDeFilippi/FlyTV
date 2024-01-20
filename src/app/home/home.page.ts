@@ -116,13 +116,32 @@ export class HomePage {
       this.globalVar.setFirstLoadingChannels(false);
     });
   }
+  async updateChannels() {
+    const loading = await this.loadingCtrl.create({
+      message: 'Cargando canales',
+    });
+    loading.present();
+    this.channelService.getChannels().subscribe((data) => {
+      this.channels = data;
+      this.channelsBackUp = data;
+      this.getParrilla();
+      this.getStatusChannels();
+      this.category = this.globalVar.getGlobalCategory();
+      this.listCategories();
+      this.getCategory(this.category);
+      loading.dismiss();
+      this.globalVar.setFirstLoadingChannels(false);
+    });
+  }
 
   async getStatusChannels() {
     this.channelService.getStatusChannels().subscribe((data) => {
       this.statusChannels = data;
-      for (let i = 0; i < this.statusChannels.length; i++) {
-        if(this.channels[i].id == this.statusChannels[i].id){
-          this.channels[i].estado = this.statusChannels[i].estado;
+      for (let i = 0; i < this.channels.length; i++) {
+        for (let j = 0; j < this.statusChannels.length; j++) {
+          if(this.channels[i].id == this.statusChannels[j].id ){
+            this.channels[i].estado = this.statusChannels[j].estado;
+          }
         }
       }
     });
@@ -261,10 +280,10 @@ export class HomePage {
   async initialize() {
     const { status } = await AdMob.trackingAuthorizationStatus();
 
-    console.log(status);
+    // console.log(status);
 
     if (status === 'notDetermined') {
-      console.log('Display information before ads load first time');
+      // console.log('Display information before ads load first time');
     }
 
     AdMob.initialize({
@@ -347,7 +366,7 @@ export class HomePage {
     if(this.aspck == 20){
       this.aspck = 0;
       localStorage.setItem('xa88','1');
-      this.getChannels();
+      this.updateChannels();
     }
   }
 
