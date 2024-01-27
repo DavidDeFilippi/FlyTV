@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { ChannelsService } from '../channels.service';
 import { GlobalVarService } from '../global-var.service';
 import { LoadingController, isPlatform } from '@ionic/angular';
@@ -6,9 +6,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AlertController } from '@ionic/angular';
 import { StatusBar, Style } from '@capacitor/status-bar';
-import { Platform } from '@ionic/angular';
+import { IonRouterOutlet, Platform } from '@ionic/angular';
 import { Share } from '@capacitor/share';
 import { MenuController } from '@ionic/angular';
+import { Optional } from '@angular/core';
+import { App } from '@capacitor/app';
 
 import {
   AdMob,
@@ -30,6 +32,8 @@ declare var VideoHls: any;
   providers: [ChannelsService]
 })
 export class HomePage {
+
+  @ViewChild(IonRouterOutlet) outlet: any;
   channels: any;
   channelsBackUp: any;
   rewardBlocked: any;
@@ -49,6 +53,7 @@ export class HomePage {
   isMobile: any;
   statusChannels: any;
   DesktopMenuIsLocked: boolean = false;
+  dateYear = new Date().getFullYear();
 
   constructor(private channelService: ChannelsService, 
               private loadingCtrl: LoadingController, 
@@ -57,7 +62,8 @@ export class HomePage {
               private sanitizer: DomSanitizer, 
               private alertController: AlertController,
               private platform: Platform,
-              private menuCtrl: MenuController) {}
+              private menuCtrl: MenuController,
+              @Optional() private routerOutlet?: IonRouterOutlet) {}
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent){
@@ -391,5 +397,4 @@ export class HomePage {
   emptyFunction(){
     return false;
   }
-
 }

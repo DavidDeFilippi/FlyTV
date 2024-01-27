@@ -60,9 +60,9 @@ ion-select{
 }
 
 ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
-  color: rgb(255, 190, 69) !important;
+  color: rgb(0 255 141) !important;
   outline: none;
-  font-weight: 500;
-  margin: 0;
-  padding: 0;
+}
+#desktop-menu:focus-visible{
+  outline: none;
 }
