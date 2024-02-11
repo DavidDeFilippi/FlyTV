@@ -80,23 +80,18 @@ export class HomePage {
 
     if (this.isMobile) {
       this.lockToPortrait();
-
       this.platform.ready().then(() => {
         StatusBar.show();
       });
     }
-
     new VideoHls('', 'stop', this.isMobile);
-
     if (this.globalVar.getFirstLoadingChannels()) {
       await this.getChannels();
     } else {
       await this.getStatusChannels();
       await this.getParrilla();
     }
-
     this.showAds();
-
   }
 
   async getChannels() {
