@@ -11,6 +11,7 @@ export class GlobalVarService {
   private globalCategory: string = '';
   private numberForAds: number = 1;
   private firstLoadingChannels: boolean = true;
+  private isExitDialog: boolean = false;
 
   public getGlobalCategory() {
     return this.globalCategory;
@@ -34,6 +35,14 @@ export class GlobalVarService {
 
   public setFirstLoadingChannels(firstLoadingChannels: boolean) {
     this.firstLoadingChannels = firstLoadingChannels;
+  }
+
+  public getExitDialog() {
+    return this.isExitDialog;
+  }
+
+  public setExitDialog(isExitDialog: boolean) {
+    this.isExitDialog = isExitDialog;
   }
 
   public isMobile(){

@@ -37,6 +37,7 @@ export class AppComponent {
     this.platform.backButton.subscribeWithPriority(-1, () => {
       if (!this.outlet?.canGoBack() && !this.globalVar.isMobile()) {
         // App.exitApp();
+        this.globalVar.setExitDialog(true);
         this.presentExitAlert();
       }
     });
@@ -51,5 +52,9 @@ export class AppComponent {
     });
 
     await alert.present();
+
+    alert.onDidDismiss().then((data)=>{
+      this.globalVar.setExitDialog(false);
+    });
   }
 }
