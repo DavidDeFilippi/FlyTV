@@ -39,4 +39,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <queries>
+        <package android:name="org.videolan.vlc" />
+    </queries>
 </manifest>

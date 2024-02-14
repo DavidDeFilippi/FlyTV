@@ -35,9 +35,11 @@ export class AppComponent {
               @Optional() private routerOutlet?: IonRouterOutlet) {
     
     this.platform.backButton.subscribeWithPriority(-1, () => {
-      if (!this.outlet?.canGoBack() && !this.globalVar.isMobile()) {
+      if (!this.outlet?.canGoBack()) {
         // App.exitApp();
-        this.globalVar.setExitDialog(true);
+        if(!this.globalVar.isMobile()){
+          this.globalVar.setExitDialog(true);
+        }
         this.presentExitAlert();
       }
     });

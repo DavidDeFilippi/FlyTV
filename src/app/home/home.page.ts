@@ -9,6 +9,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 import { Platform } from '@ionic/angular';
 import { Share } from '@capacitor/share';
 import { MenuController } from '@ionic/angular';
+import { AppLauncher } from '@capacitor/app-launcher';
 import { Optional } from '@angular/core';
 import { App } from '@capacitor/app';
 
@@ -395,36 +396,51 @@ export class HomePage {
       loading.present();
       await this.showAds();
     }else{
+
+      const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
+
       this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
       switch (id) {
         case 'chilevision':
           this.channelService.getChilevision().subscribe(async (data) => {
             let t = data;
             url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
-            await Share.share({
-              title: 'Selecciona aplicacion de video',
-              url: url,
-              dialogTitle: 'Selecciona aplicacion de video',
-            });
+            if(canopen.value){
+              window.open('vlc://'+url, "_blank");
+            }else{
+              await Share.share({
+                title: 'Selecciona aplicacion de video',
+                url: url,
+                dialogTitle: 'Selecciona aplicacion de video',
+              });
+            }
           });
           break;
         case 'canal13':
           this.channelService.getCanal13().subscribe(async (data) => {
             let t = data;
             url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+            if(canopen.value){
+              window.open('vlc://'+url, "_blank");
+            }else{
+              await Share.share({
+                title: 'Selecciona aplicacion de video',
+                url: url,
+                dialogTitle: 'Selecciona aplicacion de video',
+              });
+            }
+          });
+          break;
+        default:
+          if(canopen.value){
+            window.open('vlc://'+url, "_blank");
+          }else{
             await Share.share({
               title: 'Selecciona aplicacion de video',
               url: url,
               dialogTitle: 'Selecciona aplicacion de video',
             });
-          });
-          break;
-        default:
-          await Share.share({
-            title: 'Selecciona aplicacion de video',
-            url: url,
-            dialogTitle: 'Selecciona aplicacion de video',
-          });
+          }
       }
     }
 
@@ -460,9 +476,15 @@ export class HomePage {
       }
     }
   }
+
+  // :::::::::::: PARA ABRIR SITIOS WEB EXTERNOS:::::::::
+  async openWebSite(website: string){
+    window.open(website, "_blank");
+  }
   
   //:::::::SOLO PARA EXCEPCIONES EN CASO QUE SE NECESITE QUE EL CURSOR QUEDE EN EL LUGAR DONDE SE ASIGNE ESTA FUNCION::::: 
   emptyFunction() {
     return false;
   }
+  
 }

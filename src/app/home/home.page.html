@@ -21,7 +21,7 @@
               <ion-icon style="font-size: 21px; margin-right: 10px; color: rgb(25, 212, 0)" name="checkmark-outline"></ion-icon>
             </ion-col>
             <ion-col>
-              Canal disponible
+              Canal disponible.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -34,7 +34,7 @@
               <ion-icon style="font-size: 21px; margin-right: 10px; color: #ff0230" name="close-outline"></ion-icon>
             </ion-col>
             <ion-col>
-              Canal no disponible
+              Canal no disponible.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -48,10 +48,36 @@
         <ion-grid>
           <ion-row>
             <ion-col size="auto">
-              <ion-icon name="calendar-outline" style="font-size: 21px; color: #69d4b1; margin-right: 10px;"></ion-icon>
+              <ion-icon name="calendar-outline" style="font-size: 21px; color: #fff; margin-right: 10px;"></ion-icon>
             </ion-col>
             <ion-col>
-              Ver la programacion del canal
+              Ver la programacion del canal.
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+
+      <ion-item color="light" lines="none">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="auto">
+              <ion-icon name="globe-outline" style="font-size: 27px; color: #fff;"></ion-icon>
+            </ion-col>
+            <ion-col>
+              Abrir la página web del canal.
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+
+      <ion-item color="light" lines="none">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="auto">
+              <ion-icon name="share-outline" style="font-size: 27px; color: #fff;"></ion-icon>
+            </ion-col>
+            <ion-col>
+              Compartir canal con reproductor de video externo con Chromecast.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -77,20 +103,7 @@
               <i class="fa-brands fa-chromecast" style="font-size: 21px; margin-right: 10px;"></i>
             </ion-col>
             <ion-col>
-              Abrir instrucciones para Chromecast
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item>
-
-      <ion-item color="light" lines="none">
-        <ion-grid>
-          <ion-row>
-            <ion-col size="auto">
-              <ion-icon name="share-outline" style="font-size: 27px; color: rgb(161, 230, 0);"></ion-icon>
-            </ion-col>
-            <ion-col>
-              Compartir canal con reproductor de video externo con Chromecast.
+              Abrir instrucciones para Chromecast.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -107,7 +120,7 @@
               
             </ion-col>
             <ion-col>
-              Ingresa facilmente presionando un canal de la lista
+              Ingresa facilmente presionando un canal de la lista.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -124,7 +137,7 @@
               
             </ion-col>
             <ion-col>
-              Tambien puedes filtrar los canales por categoria (Nacionales, Entretencion, Tarapaca, Magallanes,  etc.)
+              Tambien puedes filtrar los canales por categoria (Nacionales, Entretencion, Tarapaca, Magallanes,  etc.).
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -141,7 +154,7 @@
               
             </ion-col>
             <ion-col>
-              En algunos canales, puedes ver la programacion presionando el boton <ion-icon name="calendar-outline" style="font-size: 21px; color: #69d4b1; vertical-align: bottom;"></ion-icon>
+              En algunos canales, puedes ver la programacion presionando el boton <ion-icon name="calendar-outline" style="font-size: 21px; color: #fff; vertical-align: bottom;"></ion-icon>.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -158,7 +171,7 @@
               
             </ion-col>
             <ion-col>
-              Dentro del reproductor, se encuentra disponible el boton para compartir con aplicaciones externas de video compatibles con Chromecast
+              Dentro del reproductor, se encuentra disponible el boton para compartir con aplicaciones de video externas con Chromecast.
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -234,15 +247,23 @@
 
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon
                 name="chevron-forward-outline"
-                style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+                style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 12px;"
               *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
           <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px;">
-            <ion-icon name="calendar-outline" style="font-size: 22px; color: #69d4b1; vertical-align: bottom;" (click)="setOpen(true, channel)"></ion-icon>
+            <ion-icon name="calendar-outline" style="font-size: 22px; color: #fff; vertical-align: bottom;margin-right: 0px;" (click)="setOpen(true, channel)"></ion-icon>
           </ion-label>
-          <ion-icon name="share-outline" style="font-size: 22px;margin-left: 25px; vertical-align: bottom; color: rgb(161, 230, 0)" *ngIf="!channel.iframe" (click)="openChannelUrl(channel.url, channel.id)"></ion-icon>
+          <ion-label class="ion-text-right" *ngIf="!channel.parrilla.length" style="font-size: 14px;">
+            <ion-icon name="calendar-outline" style="font-size: 22px; color: #000; vertical-align: bottom;margin-right: 0px;"></ion-icon>
+          </ion-label>
+
+          <ion-icon name="globe-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #fff" *ngIf="channel.website !== ''" (click)="openWebSite(channel.website)"></ion-icon>
+          <ion-icon name="globe-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #000" *ngIf="channel.website === ''"></ion-icon>
+
+          <ion-icon name="share-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #fff" *ngIf="!channel.iframe" (click)="openChannelUrl(channel.url, channel.id)"></ion-icon>
+          <ion-icon name="share-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #000" *ngIf="channel.iframe"></ion-icon>
 
         </ion-item>
 
@@ -256,16 +277,21 @@
 
             <ion-label style="font-size: 12px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon
                 name="chevron-forward-outline"
-                style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+                style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 12px;"
               *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;"
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #fff;"
             (click)="setOpen(true, channel)">
-            <p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px; vertical-align: bottom;"></ion-icon></p>
+            <p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px; vertical-align: bottom;margin-right: 0px;margin-left: 0px;"></ion-icon></p>
           </ion-label>
-          <ion-icon name="share-outline" style="font-size: 22px;margin-left: 25px; vertical-align: bottom; color: rgb(161, 230, 0)" *ngIf="!channel.iframe" (click)="openChannelUrl(channel.url, channel.id)"></ion-icon>
+          <ion-label class="ion-text-right" *ngIf="!channel.parrilla.length">
+            <p expand="block"><ion-icon name="calendar-outline" style="font-size: 22px; vertical-align: bottom;margin-left: 0px;margin-right: 0px; color: #000;"></ion-icon></p>
+          </ion-label>
+          <ion-icon name="globe-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #fff" *ngIf="channel.website !== ''" (click)="openWebSite(channel.website)"></ion-icon>
+          <ion-icon name="globe-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #000" *ngIf="channel.website === ''"></ion-icon>
+          <ion-icon name="share-outline" style="font-size: 22px;margin-left: 18px;margin-right: 0px; vertical-align: bottom; color: #000" *ngIf="true"></ion-icon>
         </ion-item>
 
       </ion-list>
@@ -278,11 +304,12 @@
 
             <h4>Conectar a Chromecast</h4>
 
-            <p>En el reproductor, selecciona el icono de compartir. <ion-icon name="share-outline" style="color: rgb(161, 230, 0); font-size: 22px; vertical-align: bottom;"></ion-icon>
+            <p>En el reproductor, selecciona el icono de compartir. <ion-icon name="share-outline" style="color: #fff; font-size: 22px; vertical-align: bottom;"></ion-icon>
             </p>
 
-            <p>Selecciona un reproductor de video compatible con chromecast. Recomendamos VLC for Android, pero también
-              puedes usar tu reproductor favorito.</p>
+            <p>Si tienes el reproductor VLC, este se abrira automaticamente.</p>
+
+            <p>Si tienes otro reproductor y no tienes instalado VLC, se abrirá la opcion de compartir con app de video.</p>
 
             <a href="https://play.google.com/store/apps/details?id=org.videolan.vlc" target="_blank"
               class="ion-text-center" style="color: #fff;">
@@ -294,6 +321,8 @@
               </div>
 
             </a>
+
+            <p>VLC media player es un proyecto de código abierto, por lo cual su aplicacion no contiene publicidad y es 100% gratuita.</p>
 
             <p><ion-icon name="logo-chrome" style="font-size: 21px; margin-right: 5px; vertical-align: bottom;"></ion-icon>Otra alternativa es compartir el canal a Google Chrome, el cual también es compatible con Chromecast.</p>
 
@@ -377,12 +406,12 @@
 
             <ion-label style="font-size: 17px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon
                 name="chevron-forward-outline"
-                style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+                style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 17px;"
               *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;"
+          <ion-label class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #fff;"
             (click)="setOpen(true, channel)" (mouseenter)="DesktopMenuIsLocked = true">
             <p expand="block"><ion-icon name="calendar-outline" style="font-size: 27px; padding: 0;"></ion-icon></p>
           </ion-label>
@@ -393,18 +422,17 @@
           <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : '#ff0230'}"
             [attr.name]="channel.estado ? 'checkmark-outline' : 'close-outline'"
             style="font-size: 21px; margin-right: 10px;"></ion-icon>
-          <ion-icon name="share-outline" style="font-size: 11px; margin-right: 10px; color: rgb(161, 230, 0);"></ion-icon>
           <img class="channel-logo" [src]="channel.logo"><ion-label [routerLink]="" [attr.id]="channel.id"
            (click)="openChannelUrl(channel.url, channel.id)" (mouseenter)="DesktopMenuIsLocked = false">{{channel.name}}
 
             <ion-label style="font-size: 17px;" *ngIf="channel.transmitiendo.current !== ''"><ion-icon
                 name="chevron-forward-outline"
-                style="color: #69d4b1;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+                style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
             <ion-label style="font-size: 17px;"
               *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
 
           </ion-label>
-          <ion-label (mouseenter)="DesktopMenuIsLocked = true" class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #69d4b1;"
+          <ion-label (mouseenter)="DesktopMenuIsLocked = true" class="ion-text-right" *ngIf="channel.parrilla.length" style="font-size: 14px; color: #fff;"
             (click)="setOpen(true, channel)">
             <p expand="block"><ion-icon name="calendar-outline" style="font-size: 27px; padding: 0;"></ion-icon></p>
           </ion-label>
@@ -424,7 +452,7 @@
             style="width: 30px; vertical-align: middle; margin-right: 10px;">Programacion
           {{channelModal.name}}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="setOpen(false,channel)">Cerrar</ion-button>
+          <ion-button *ngIf="isMobile" (click)="setOpen(false,channel)">Cerrar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>

@@ -7,6 +7,7 @@ import { Platform } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { Share } from '@capacitor/share';
 import { GlobalVarService } from '../global-var.service';
+import { AppLauncher } from '@capacitor/app-launcher';
 
 
 declare var VideoHls: any;
@@ -110,12 +111,53 @@ export class ReproductorPage implements OnInit {
     }
 
     async openChannelUrl(){
-      // window.open(this.channel.url, "_blank");
-      await Share.share({
-        title: 'Selecciona aplicacion de video',
-        url: this.channel.url,
-        dialogTitle: 'Selecciona aplicacion de video',
-      });
+
+      const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
+
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      switch (this.channel.id) {
+        case 'chilevision':
+          this.channelService.getChilevision().subscribe(async (data) => {
+            let t = data;
+            this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+            if(canopen.value){
+              window.open('vlc://'+this.channel.url, "_blank");
+            }else{
+              await Share.share({
+                title: 'Selecciona aplicacion de video',
+                url: this.channel.url,
+                dialogTitle: 'Selecciona aplicacion de video',
+              });
+            }
+          });
+          break;
+        case 'canal13':
+          this.channelService.getCanal13().subscribe(async (data) => {
+            let t = data;
+            this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+            if(canopen.value){
+              window.open('vlc://'+this.channel.url, "_blank");
+            }else{
+              await Share.share({
+                title: 'Selecciona aplicacion de video',
+                url: this.channel.url,
+                dialogTitle: 'Selecciona aplicacion de video',
+              });
+            }
+          });
+          break;
+        default:
+          if(canopen.value){
+            window.open('vlc://'+this.channel.url, "_blank");
+          }else{
+            await Share.share({
+              title: 'Selecciona aplicacion de video',
+              url: this.channel.url,
+              dialogTitle: 'Selecciona aplicacion de video',
+            });
+          }
+        }
+
     }
 
 }
