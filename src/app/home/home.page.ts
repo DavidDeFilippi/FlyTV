@@ -357,6 +357,9 @@ export class HomePage {
   handleChange(e: any) {
     // console.log('ionChange fired with value: ' + e.detail.value);
     this.getCategory(e.detail.value);
+    if(!this.isMobile){
+      this.openDesktoptMenu(false);
+    }
   }
 
   //MODAL PROGRAMACION DEL CANAL O PARRILLA O COMO SE LLAME
@@ -389,11 +392,7 @@ export class HomePage {
   //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS:::::::::
   async openChannelUrl(url: string, id: string) {
     if(this.globalVar.getNumberForAds() % 2 != 0  && localStorage.getItem('xa88') === null){
-      const loading = await this.loadingCtrl.create({
-        // message: 'Cargando canales',
-        duration: 5000,
-      });
-      loading.present();
+      this.simpleLoading(5000, '');
       await this.showAds();
     }else{
 
@@ -406,6 +405,7 @@ export class HomePage {
             let t = data;
             url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
             if(canopen.value){
+              await this.simpleLoading(5000, '');
               window.open('vlc://'+url, "_blank");
             }else{
               await Share.share({
@@ -421,6 +421,7 @@ export class HomePage {
             let t = data;
             url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
             if(canopen.value){
+              await this.simpleLoading(5000, '');
               window.open('vlc://'+url, "_blank");
             }else{
               await Share.share({
@@ -433,6 +434,7 @@ export class HomePage {
           break;
         default:
           if(canopen.value){
+            await this.simpleLoading(5000, '');
             window.open('vlc://'+url, "_blank");
           }else{
             await Share.share({
@@ -464,6 +466,14 @@ export class HomePage {
       localStorage.setItem('xa88', '1');
       this.updateChannels();
     }
+  }
+
+  async simpleLoading(milliseconds: number, message: string){
+    const loading = await this.loadingCtrl.create({
+      message: message,
+      duration: milliseconds,
+    });
+    loading.present();
   }
 
   //::::::ABRE EL MENU DE CATEGORIAS EN LA VERSION DESKTOP O ATV::::::
