@@ -262,7 +262,8 @@
                       next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : ''}"
                     (click)="stopPreviewChannel()">Ver Canal</ion-button>
 
-                  <ion-button fill="solid" style="margin-left: 12px; font-weight: 500;" (click)="muteUnMutePlayer()" color="medium"><ion-icon [attr.name]="playerMuteUnmuteAttribute"></ion-icon></ion-button>
+                  <ion-button fill="solid" style="margin-left: 12px; font-weight: 900;" (click)="stopPreviewChannel()" color="danger"><ion-icon name="close-circle-outline"></ion-icon></ion-button>
+
                 </ion-buttons>
               </ion-toolbar>
 
@@ -275,7 +276,7 @@
         <ion-item *ngIf="!previewAutorized" color="dark" style="margin: 0; padding: 0;">
           <ion-label style="font-size: 15px;vertical-align: top;" class="ion-text-center">
 
-            <ion-button color="medium" (click)="autorizePreview()">Volver a Vista Previa</ion-button>
+            <ion-button color="medium" (click)="autorizePreview()">Ver Vista Previa</ion-button>
 
           </ion-label>
         </ion-item>

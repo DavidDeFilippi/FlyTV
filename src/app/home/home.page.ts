@@ -80,9 +80,13 @@ export class HomePage {
     private menuCtrl: MenuController
   ) {
 
-    this.platform.pause.subscribe(async () => {
-      this.stopPreviewChannel();
-    });
+    // this.platform.pause.subscribe(async () => {
+    //   this.stopPreviewChannel();
+    // });
+
+    // this.platform.resume.subscribe(async () => {
+    //   this.autorizePreview();
+    // });
 
   }
 
@@ -117,7 +121,9 @@ export class HomePage {
       await this.getParrilla();
     }
 
-    this.showAds();
+    setTimeout(()=>{
+      this.showAds();
+    });
 
   }
 
@@ -198,15 +204,15 @@ export class HomePage {
         }
       }
 
-      if (this.isMobile) {
+      // if (this.isMobile) {
 
-        if (localStorage.getItem('mute') == '1') {
-          this.playerMuteUnmuteAttribute = 'volume-mute';
-          this.isPlayerMuted = true;
-          localStorage.setItem('mute', '1');
-          new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-        }
-      }
+      //   if (localStorage.getItem('mute') == '1') {
+      //     this.playerMuteUnmuteAttribute = 'volume-mute';
+      //     this.isPlayerMuted = true;
+      //     localStorage.setItem('mute', '1');
+      //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+      //   }
+      // }
       this.getPreviewChannel();
 
     });
@@ -214,8 +220,7 @@ export class HomePage {
 
   getPreviewChannel() {
     const canalesPrincipales = [
-      'canal13',
-      'chilevision',
+      'canal132',
       'mega',
       'tvn',
       'tele13',
@@ -231,16 +236,18 @@ export class HomePage {
         break;
       }
     }
+
     new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
 
-    if (this.loadedChannels && this.isMobile) {
-      if (localStorage.getItem('mute') == '1') {
-        this.playerMuteUnmuteAttribute = 'volume-mute';
-        this.isPlayerMuted = true;
-        localStorage.setItem('mute', '1');
-        new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-      }
-    }
+
+    // if (this.loadedChannels && this.isMobile) {
+    //   if (localStorage.getItem('mute') == '1') {
+    //     this.playerMuteUnmuteAttribute = 'volume-mute';
+    //     this.isPlayerMuted = true;
+    //     localStorage.setItem('mute', '1');
+    //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+    //   }
+    // }
 
     this.previewChannelsInterval = setInterval(() => {
       this.prevChannels = [];
@@ -267,14 +274,14 @@ export class HomePage {
   getDinamicUrlChannel(id: string) {
     switch (id) {
       case 'chilevision':
-        this.channelService.getChilevision().subscribe(async (data) => {
+        this.channelService.getChilevision().subscribe((data) => {
           let t = data;
           return 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
 
         });
         break;
       case 'canal13':
-        this.channelService.getCanal13().subscribe(async (data) => {
+        this.channelService.getCanal13().subscribe((data) => {
           let t = data;
           return 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
 
@@ -419,13 +426,9 @@ export class HomePage {
   }
 
   async showInterstitial() {
-
+    
     AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
       new VideoHls('', 'pause', this.isMobile, 'videoPreview');
-    });
-
-    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-      new VideoHls('', 'resume', this.isMobile, 'videoPreview');
     });
 
     const options: AdOptions = {
@@ -633,19 +636,19 @@ export class HomePage {
     window.open(website, "_blank");
   }
 
-  muteUnMutePlayer() {
-    if (this.isPlayerMuted && localStorage.getItem('mute') == '1') {
-      this.playerMuteUnmuteAttribute = 'volume-high';
-      this.isPlayerMuted = false;
-      localStorage.setItem('mute', '0');
-      new VideoHls('', 'unmute', this.isMobile, 'videoPreview');
-    } else {
-      this.playerMuteUnmuteAttribute = 'volume-mute';
-      this.isPlayerMuted = true;
-      localStorage.setItem('mute', '1');
-      new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-    }
-  }
+  // muteUnMutePlayer() {
+  //   if (this.isPlayerMuted && localStorage.getItem('mute') == '1') {
+  //     this.playerMuteUnmuteAttribute = 'volume-high';
+  //     this.isPlayerMuted = false;
+  //     localStorage.setItem('mute', '0');
+  //     new VideoHls('', 'unmute', this.isMobile, 'videoPreview');
+  //   } else {
+  //     this.playerMuteUnmuteAttribute = 'volume-mute';
+  //     this.isPlayerMuted = true;
+  //     localStorage.setItem('mute', '1');
+  //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+  //   }
+  // }
 
   //:::::::SOLO PARA EXCEPCIONES EN CASO QUE SE NECESITE QUE EL CURSOR QUEDE EN EL LUGAR DONDE SE ASIGNE ESTA FUNCION::::: 
   emptyFunction() {
