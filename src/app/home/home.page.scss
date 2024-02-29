@@ -46,6 +46,11 @@ ion-list{
   margin-right: 5px;
 }
 
+.channel-logo-preview{
+  width: 20px;
+  margin-right: 5px;
+}
+
 .acordeon-logo{
   width: 25px;
   margin-right: 5px;
@@ -66,3 +71,23 @@ ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
 #desktop-menu:focus-visible{
   outline: none;
 }
+
+#videoPreview {
+  height: 80px;
+  width: 140px;
+  background: url('/assets/loading.gif');
+  background-size: 50px 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: black !important;
+}
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-timeline,
+video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-time-remaining-display,
+video::-webkit-media-controls-toggle-closed-captions-button,
+video::-webkit-media-controls-volume-slider{
+  display: none !important;
+}
+

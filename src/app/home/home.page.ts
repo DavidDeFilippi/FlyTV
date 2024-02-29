@@ -20,6 +20,7 @@ import {
   BannerAdOptions,
   BannerAdPosition,
   BannerAdSize,
+  InterstitialAdPluginEvents,
   RewardAdOptions,
   RewardAdPluginEvents
 } from '@capacitor-community/admob'
@@ -35,6 +36,7 @@ declare var VideoHls: any;
 export class HomePage {
 
   channels: any;
+  channelIndex: number = 0;
   channelsBackUp: any;
   rewardBlocked: any;
   category: any
@@ -55,6 +57,18 @@ export class HomePage {
   statusChannels: any;
   DesktopMenuIsLocked: boolean = false;
   dateYear = new Date().getFullYear();
+  enableChannelPreview: boolean = false;
+  arrayNumbers: number[] = [];
+  prevChannels: any;
+  ranChannel: any = { logo: '', transmitiendo: { current: '', next: '' } };
+  loadedChannels: boolean = false;
+  rID: number = 0;
+  previewChannelsInterval: any;
+  AppPaused: boolean = false;
+  AppResume: boolean = false;
+  playerMuteUnmuteAttribute: string = 'volume-high';
+  isPlayerMuted: boolean = false;
+  previewAutorized: boolean = true;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -64,7 +78,13 @@ export class HomePage {
     private alertController: AlertController,
     private platform: Platform,
     private menuCtrl: MenuController
-    ) { }
+  ) {
+
+    this.platform.pause.subscribe(async () => {
+      this.stopPreviewChannel();
+    });
+
+  }
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
@@ -77,6 +97,10 @@ export class HomePage {
 
   async ionViewWillEnter() {
 
+    this.enableChannelPreview = true;
+
+    this.rID = Math.floor(Math.random() * 100) + 1;
+
     this.isMobile = this.globalVar.isMobile();
 
     if (this.isMobile) {
@@ -85,14 +109,16 @@ export class HomePage {
         StatusBar.show();
       });
     }
-    new VideoHls('', 'stop', this.isMobile);
+
     if (this.globalVar.getFirstLoadingChannels()) {
       await this.getChannels();
     } else {
       await this.getStatusChannels();
       await this.getParrilla();
     }
+
     this.showAds();
+
   }
 
   async getChannels() {
@@ -112,6 +138,7 @@ export class HomePage {
       this.getCategory(this.category);
       loading.dismiss();
       this.globalVar.setFirstLoadingChannels(false);
+
     });
 
   }
@@ -121,6 +148,7 @@ export class HomePage {
     });
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
+      clearInterval(this.previewChannelsInterval);
       this.channels = data;
       this.channelsBackUp = data;
       this.getParrilla();
@@ -140,6 +168,7 @@ export class HomePage {
         for (let j = 0; j < this.statusChannels.length; j++) {
           if (this.channels[i].id == this.statusChannels[j].id) {
             this.channels[i].estado = this.statusChannels[j].estado;
+            this.channelsBackUp[i].estado = this.statusChannels[j].estado;
           }
         }
       }
@@ -168,7 +197,104 @@ export class HomePage {
           }
         }
       }
+
+      if (this.isMobile) {
+
+        if (localStorage.getItem('mute') == '1') {
+          this.playerMuteUnmuteAttribute = 'volume-mute';
+          this.isPlayerMuted = true;
+          localStorage.setItem('mute', '1');
+          new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+        }
+      }
+      this.getPreviewChannel();
+
     });
+  }
+
+  getPreviewChannel() {
+    const canalesPrincipales = [
+      'canal13',
+      'chilevision',
+      'mega',
+      'tvn',
+      'tele13',
+      'chilevisionnoticias',
+      'meganoticias',
+      '24horas',
+      'biobiotv'
+    ];
+    const randomId = Math.floor(Math.random() * canalesPrincipales.length);
+    for (let i = 0; i < this.channels.length; i++) {
+      if (this.channels[i].id === canalesPrincipales[randomId]) {
+        this.ranChannel = this.channels[i];
+        break;
+      }
+    }
+    new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
+
+    if (this.loadedChannels && this.isMobile) {
+      if (localStorage.getItem('mute') == '1') {
+        this.playerMuteUnmuteAttribute = 'volume-mute';
+        this.isPlayerMuted = true;
+        localStorage.setItem('mute', '1');
+        new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+      }
+    }
+
+    this.previewChannelsInterval = setInterval(() => {
+      this.prevChannels = [];
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].url.includes('https') && this.channels[i].iframe == false && this.channels[i].estado == 1) {
+          this.prevChannels.push(i);
+        }
+      }
+
+      const random = Math.floor(Math.random() * this.prevChannels.length);
+      this.channelIndex = this.prevChannels[random];
+
+      this.ranChannel = this.channels[this.channelIndex];
+      if (this.ranChannel.id === 'canal13') {
+        new VideoHls(this.getDinamicUrlChannel('canal13'), 'play', this.isMobile, 'videoPreview');
+      } else if (this.ranChannel.id === 'chilevision') {
+        new VideoHls(this.getDinamicUrlChannel('chilevision'), 'play', this.isMobile, 'videoPreview');
+      } else {
+        new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
+      }
+    }, 15000);
+  }
+
+  getDinamicUrlChannel(id: string) {
+    switch (id) {
+      case 'chilevision':
+        this.channelService.getChilevision().subscribe(async (data) => {
+          let t = data;
+          return 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+
+        });
+        break;
+      case 'canal13':
+        this.channelService.getCanal13().subscribe(async (data) => {
+          let t = data;
+          return 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+
+        });
+        break;
+    }
+  }
+
+  stopPreviewChannel() {
+    clearInterval(this.previewChannelsInterval);
+    new VideoHls('', 'stop', this.isMobile, 'videoPreview');
+    this.previewAutorized = false;
+  }
+
+  autorizePreview() {
+    this.previewAutorized = true;
+
+    setTimeout(() => {
+      this.getPreviewChannel();
+    }, 1000);
 
   }
 
@@ -294,6 +420,14 @@ export class HomePage {
 
   async showInterstitial() {
 
+    AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
+      new VideoHls('', 'pause', this.isMobile, 'videoPreview');
+    });
+
+    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+      new VideoHls('', 'resume', this.isMobile, 'videoPreview');
+    });
+
     const options: AdOptions = {
       adId: 'ca-app-pub-4427288659732696/1947824722',
       isTesting: false,
@@ -325,7 +459,7 @@ export class HomePage {
 
   async showAds() {
     if (this.isMobile) {
-        this.initialize();
+      this.initialize();
       if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
         await this.showInterstitial();
         this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
@@ -357,7 +491,7 @@ export class HomePage {
   handleChange(e: any) {
     // console.log('ionChange fired with value: ' + e.detail.value);
     this.getCategory(e.detail.value);
-    if(!this.isMobile){
+    if (!this.isMobile) {
       this.openDesktoptMenu(false);
     }
   }
@@ -391,62 +525,69 @@ export class HomePage {
 
   //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS:::::::::
   async openChannelUrl(url: string, id: string) {
-    if(this.globalVar.getNumberForAds() % 2 != 0  && localStorage.getItem('xa88') === null){
-      this.simpleLoading(5000, '');
-      await this.showAds();
-    }else{
+    const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
 
-      const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
-
-      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      switch (id) {
-        case 'chilevision':
-          this.channelService.getChilevision().subscribe(async (data) => {
-            let t = data;
-            url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
-            if(canopen.value){
-              await this.simpleLoading(5000, '');
-              window.open('vlc://'+url, "_blank");
-            }else{
-              await Share.share({
-                title: 'Selecciona aplicacion de video',
-                url: url,
-                dialogTitle: 'Selecciona aplicacion de video',
-              });
-            }
-          });
-          break;
-        case 'canal13':
-          this.channelService.getCanal13().subscribe(async (data) => {
-            let t = data;
-            url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-            if(canopen.value){
-              await this.simpleLoading(5000, '');
-              window.open('vlc://'+url, "_blank");
-            }else{
-              await Share.share({
-                title: 'Selecciona aplicacion de video',
-                url: url,
-                dialogTitle: 'Selecciona aplicacion de video',
-              });
-            }
-          });
-          break;
-        default:
-          if(canopen.value){
-            await this.simpleLoading(5000, '');
-            window.open('vlc://'+url, "_blank");
-          }else{
-            await Share.share({
-              title: 'Selecciona aplicacion de video',
-              url: url,
-              dialogTitle: 'Selecciona aplicacion de video',
-            });
-          }
-      }
+    if (canopen.value) {
+      this.stopPreviewChannel();
     }
 
+    setTimeout(async () => {
+      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+        this.simpleLoading(5000, '');
+        await this.showAds();
+      } else {
+
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+        switch (id) {
+          case 'chilevision':
+            this.channelService.getChilevision().subscribe(async (data) => {
+              let t = data;
+              url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+              if (canopen.value) {
+                await this.simpleLoading(5000, '');
+                window.open('vlc://' + url, "_blank");
+              } else {
+                await Share.share({
+                  title: 'Selecciona aplicacion de video',
+                  url: url,
+                  dialogTitle: 'Selecciona aplicacion de video',
+                });
+              }
+            });
+            break;
+          case 'canal13':
+            this.channelService.getCanal13().subscribe(async (data) => {
+              let t = data;
+              url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+              if (canopen.value) {
+                await this.simpleLoading(5000, '');
+                window.open('vlc://' + url, "_blank");
+              } else {
+                await Share.share({
+                  title: 'Selecciona aplicacion de video',
+                  url: url,
+                  dialogTitle: 'Selecciona aplicacion de video',
+                });
+              }
+            });
+            break;
+          default:
+            if (canopen.value) {
+              await this.simpleLoading(5000, '');
+              window.open('vlc://' + url, "_blank");
+            } else {
+              await Share.share({
+                title: 'Selecciona aplicacion de video',
+                url: url,
+                dialogTitle: 'Selecciona aplicacion de video',
+              });
+            }
+        }
+      }
+    }, 1);
+
   }
+
 
   //:::::::PARA COMPARTIR EN REDES SOCIALES::::::
   async openShareApp() {
@@ -468,7 +609,7 @@ export class HomePage {
     }
   }
 
-  async simpleLoading(milliseconds: number, message: string){
+  async simpleLoading(milliseconds: number, message: string) {
     const loading = await this.loadingCtrl.create({
       message: message,
       duration: milliseconds,
@@ -488,13 +629,27 @@ export class HomePage {
   }
 
   // :::::::::::: PARA ABRIR SITIOS WEB EXTERNOS:::::::::
-  async openWebSite(website: string){
+  async openWebSite(website: string) {
     window.open(website, "_blank");
   }
-  
+
+  muteUnMutePlayer() {
+    if (this.isPlayerMuted && localStorage.getItem('mute') == '1') {
+      this.playerMuteUnmuteAttribute = 'volume-high';
+      this.isPlayerMuted = false;
+      localStorage.setItem('mute', '0');
+      new VideoHls('', 'unmute', this.isMobile, 'videoPreview');
+    } else {
+      this.playerMuteUnmuteAttribute = 'volume-mute';
+      this.isPlayerMuted = true;
+      localStorage.setItem('mute', '1');
+      new VideoHls('', 'mute', this.isMobile, 'videoPreview');
+    }
+  }
+
   //:::::::SOLO PARA EXCEPCIONES EN CASO QUE SE NECESITE QUE EL CURSOR QUEDE EN EL LUGAR DONDE SE ASIGNE ESTA FUNCION::::: 
   emptyFunction() {
     return false;
   }
-  
+
 }

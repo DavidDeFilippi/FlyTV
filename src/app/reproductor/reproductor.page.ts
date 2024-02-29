@@ -35,6 +35,8 @@ export class ReproductorPage implements OnInit {
 
   ngOnInit() {
 
+    // new VideoHls('', 'stop', this.isMobile, 'video');
+
     this.isMobile = this.globalVar.isMobile();
 
     if(this.isMobile){
@@ -62,7 +64,7 @@ export class ReproductorPage implements OnInit {
           this.channelService.getChilevision().subscribe((data) =>{
             let t = data;
             this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token='+t.token;
-            new VideoHls(this.channel.url, 'play', this.isMobile);
+            new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
             this.presentToast('bottom');
           });
         break;
@@ -70,12 +72,12 @@ export class ReproductorPage implements OnInit {
           this.channelService.getCanal13().subscribe((data) =>{
             let t = data;
             this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token='+t.data.authToken;
-            new VideoHls(this.channel.url, 'play', this.isMobile);
+            new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
             this.presentToast('bottom');
           });
         break;
         default:
-          new VideoHls(this.channel.url, 'play', this.isMobile);
+          new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
           this.presentToast('bottom');
       }
     });  

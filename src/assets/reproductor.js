@@ -10,13 +10,16 @@ var hls;
 //   false,
 // );
 
-function VideoHls(videoSource, action, isMobile) {
+function VideoHls(videoSource, action, isMobile, playerID) {
   if (Hls.isSupported() && videoSource != '' && action == 'play') {
-    video = document.getElementById('video');
+    video = document.getElementById(playerID);
     hls = new Hls();
-    getListeners(isMobile);
+    getListeners(isMobile, playerID);
     hls.loadSource(videoSource);
     hls.attachMedia(video);
+    if(playerID == "videoPreview"){
+      hls.subtitleDisplay = false;
+    }
     video.play();
   }
   else if (videoSource != '' && action == 'play') {
@@ -26,16 +29,27 @@ function VideoHls(videoSource, action, isMobile) {
         video.play();
       });
     }
-  }
-  else if (videoSource == '' && action == 'stop') {
+  }else if(videoSource == '' && action == 'pause'){
+    var vid = document.getElementById(playerID) ;
+    vid.pause();
+  }else if(videoSource == '' && action == 'mute'){
+    var vid = document.getElementById(playerID) ;
+    vid.muted = true;
+  }else if(videoSource == '' && action == 'unmute'){
+    var vid = document.getElementById(playerID) ;
+    vid.muted = false;
+  }else if (videoSource == '' && action == 'stop') {
     if (hls !== undefined && video !== undefined) {
       hls.stopLoad();
       hls.destroy();
     }
+  }else if(videoSource == '' && action == 'resume'){
+    var vid = document.getElementById(playerID) ;
+    vid.play();
   }
 }
 
-function getListeners(isMobile){
+function getListeners(isMobile, playerID){
   hls.on(Hls.Events.ERROR, function (event, data) {
     
     var errorType = data.type;
@@ -43,16 +57,24 @@ function getListeners(isMobile){
     var errorFatal = data.fatal;
   
     if(errorDetails == 'manifestLoadError'){
-      document.getElementById('video').style.backgroundImage = "url(../../assets/videoError.png)";
-      document.getElementById("video").style.backgroundSize = "100px";
+      if(playerID == 'video'){
+        document.getElementById(playerID).style.backgroundImage = "url(../../assets/videoError.png)";
+        document.getElementById(playerID).style.backgroundSize = "100px";
+      }else if(playerID == 'videoPreview'){
+        document.getElementById(playerID).style.backgroundImage = "none";
+        // document.getElementById(playerID).style.backgroundSize = "20px";
+      }
     }
   });
 
   hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
     
-    document.getElementById('video').style.backgroundImage = "none";
+    document.getElementById(playerID).style.backgroundImage = "none";
     if(isMobile){
-      video.setAttribute("controls","");
+      if(playerID == "video"){
+        video.setAttribute("controls","");
+      }
+      
     }
   });
 }
