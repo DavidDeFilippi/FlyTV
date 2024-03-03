@@ -58,20 +58,10 @@ export class HomePage {
   DesktopMenuIsLocked: boolean = false;
   dateYear = new Date().getFullYear();
   enableChannelPreview: boolean = false;
-  arrayNumbers: number[] = [];
-  prevChannels: any;
-  ranChannel: any = { logo: '', transmitiendo: { current: '', next: '' } };
-  loadedChannels: boolean = false;
-  rID: number = 0;
-  previewChannelsInterval: any;
-  AppPaused: boolean = false;
-  AppResume: boolean = false;
-  playerMuteUnmuteAttribute: string = 'volume-high';
-  isPlayerMuted: boolean = false;
+  ranChannel: any;
   previewAutorized: boolean = false;
-  intervalChannelDuration: any = 0;
+  intervalChannelDuration: any;
   timeChannelPreview: any;
-  canalesPrincipales: any;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -81,17 +71,7 @@ export class HomePage {
     private alertController: AlertController,
     private platform: Platform,
     private menuCtrl: MenuController
-  ) {
-
-    // this.platform.pause.subscribe(async () => {
-    //   this.stopPreviewChannel();
-    // });
-
-    // this.platform.resume.subscribe(async () => {
-    //   this.autorizePreview();
-    // });
-
-  }
+  ) { }
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
@@ -105,9 +85,6 @@ export class HomePage {
   async ionViewWillEnter() {
 
     this.enableChannelPreview = true;
-
-    this.rID = Math.floor(Math.random() * 100) + 1;
-
 
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     new VideoHls('', 'stop', this.isMobile, 'video');
@@ -125,11 +102,11 @@ export class HomePage {
     if (this.globalVar.getFirstLoadingChannels()) {
       await this.getChannels();
     } else {
-      await this.getCanalesPrincipales();
       await this.getStatusChannels();
       await this.getParrilla();
+
     }
-    
+
     this.showAds();
 
   }
@@ -142,7 +119,6 @@ export class HomePage {
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
       this.channelsBackUp = data;
-      this.getCanalesPrincipales();
       if (this.globalVar.getFirstLoadingChannels()) {
         this.getParrilla();
         this.getStatusChannels();
@@ -162,11 +138,8 @@ export class HomePage {
     });
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
-      clearInterval(this.previewChannelsInterval);
-      clearInterval(this.timeChannelPreview);
       this.channels = data;
       this.channelsBackUp = data;
-      this.getCanalesPrincipales();
       this.getParrilla();
       this.getStatusChannels();
       this.category = this.globalVar.getGlobalCategory();
@@ -213,26 +186,21 @@ export class HomePage {
           }
         }
       }
-
-      // this.getPreviewChannel(this.canalesPrincipales[(Math.floor(Math.random() * this.canalesPrincipales.length))]);
-
-    });
-  }
-
-  async getCanalesPrincipales() {
-    this.channelService.getCanalesPrincipales().subscribe((data) => {
-      this.canalesPrincipales = data;
     });
   }
 
   getPreviewChannel(id: string) {
-    clearInterval(this.timeChannelPreview);
+
+    console.log('id: ' + id);
+
     for (let i = 0; i < this.channels.length; i++) {
       if (this.channels[i].id === id && this.channels[i].iframe == false) {
         this.ranChannel = this.channels[i]
       }
     }
+
     this.previewAutorized = true;
+
     if (this.ranChannel.id === 'chilevision') {
       this.getDinamicUrlChannel('chilevision');
     } else if (this.ranChannel.id === 'mega') {
@@ -240,31 +208,30 @@ export class HomePage {
     } else {
       new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
     }
-
-
     
-    let tiempoCumplido = false;
-    this.intervalChannelDuration = 0;
+    this.getRelojDuracionVistaPreviaCanales();
 
+  }
+
+  getRelojDuracionVistaPreviaCanales() {
+    clearInterval(this.timeChannelPreview);
+    this.intervalChannelDuration = 0;
     this.timeChannelPreview = setInterval(() => {
-      if (!tiempoCumplido) {
-        this.intervalChannelDuration += 0.00165;
-        if (this.intervalChannelDuration >= 1) {
-          new VideoHls('', 'pause', this.isMobile, 'videoPreview');
-          tiempoCumplido = true;
-        }
+      if (this.intervalChannelDuration < 1) {
+        this.intervalChannelDuration += 0.066666667;
+        console.log(this.intervalChannelDuration);
+      } else {
+        new VideoHls('', 'pause', this.isMobile, 'videoPreview');
       }
-    }, 50);
+    }, 1000);
   }
 
   getDinamicUrlChannel(id: string) {
-
     switch (id) {
       case 'chilevision':
         this.channelService.getChilevision().subscribe((data) => {
           let t = data;
           new VideoHls('https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token, 'play', this.isMobile, 'videoPreview');
-
         });
         break;
       case 'canal13':
@@ -274,7 +241,6 @@ export class HomePage {
         });
         break;
     }
-
   }
 
   stopPreviewChannel() {
@@ -512,7 +478,7 @@ export class HomePage {
   //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS:::::::::
   async openChannelUrl(url: string, id: string) {
     const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
-    
+
     this.stopPreviewChannel();
 
     setTimeout(async () => {
