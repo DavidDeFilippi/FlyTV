@@ -68,7 +68,10 @@ export class HomePage {
   AppResume: boolean = false;
   playerMuteUnmuteAttribute: string = 'volume-high';
   isPlayerMuted: boolean = false;
-  previewAutorized: boolean = true;
+  previewAutorized: boolean = false;
+  intervalChannelDuration: any = 0;
+  timeChannelPreview: any;
+  canalesPrincipales: any;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -105,6 +108,11 @@ export class HomePage {
 
     this.rID = Math.floor(Math.random() * 100) + 1;
 
+
+    new VideoHls('', 'stop', this.isMobile, 'videoPreview');
+    new VideoHls('', 'stop', this.isMobile, 'video');
+
+
     this.isMobile = this.globalVar.isMobile();
 
     if (this.isMobile) {
@@ -117,13 +125,12 @@ export class HomePage {
     if (this.globalVar.getFirstLoadingChannels()) {
       await this.getChannels();
     } else {
+      await this.getCanalesPrincipales();
       await this.getStatusChannels();
       await this.getParrilla();
     }
-
-    setTimeout(()=>{
-      this.showAds();
-    });
+    
+    this.showAds();
 
   }
 
@@ -135,6 +142,7 @@ export class HomePage {
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
       this.channelsBackUp = data;
+      this.getCanalesPrincipales();
       if (this.globalVar.getFirstLoadingChannels()) {
         this.getParrilla();
         this.getStatusChannels();
@@ -155,8 +163,10 @@ export class HomePage {
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
       clearInterval(this.previewChannelsInterval);
+      clearInterval(this.timeChannelPreview);
       this.channels = data;
       this.channelsBackUp = data;
+      this.getCanalesPrincipales();
       this.getParrilla();
       this.getStatusChannels();
       this.category = this.globalVar.getGlobalCategory();
@@ -204,106 +214,74 @@ export class HomePage {
         }
       }
 
-      // if (this.isMobile) {
-
-      //   if (localStorage.getItem('mute') == '1') {
-      //     this.playerMuteUnmuteAttribute = 'volume-mute';
-      //     this.isPlayerMuted = true;
-      //     localStorage.setItem('mute', '1');
-      //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-      //   }
-      // }
-      this.getPreviewChannel();
+      // this.getPreviewChannel(this.canalesPrincipales[(Math.floor(Math.random() * this.canalesPrincipales.length))]);
 
     });
   }
 
-  getPreviewChannel() {
-    const canalesPrincipales = [
-      'canal132',
-      'mega',
-      'tvn',
-      'tele13',
-      'chilevisionnoticias',
-      'meganoticias',
-      '24horas',
-      'biobiotv'
-    ];
-    const randomId = Math.floor(Math.random() * canalesPrincipales.length);
+  async getCanalesPrincipales() {
+    this.channelService.getCanalesPrincipales().subscribe((data) => {
+      this.canalesPrincipales = data;
+    });
+  }
+
+  getPreviewChannel(id: string) {
+    clearInterval(this.timeChannelPreview);
     for (let i = 0; i < this.channels.length; i++) {
-      if (this.channels[i].id === canalesPrincipales[randomId]) {
-        this.ranChannel = this.channels[i];
-        break;
+      if (this.channels[i].id === id && this.channels[i].iframe == false) {
+        this.ranChannel = this.channels[i]
       }
     }
+    this.previewAutorized = true;
+    if (this.ranChannel.id === 'chilevision') {
+      this.getDinamicUrlChannel('chilevision');
+    } else if (this.ranChannel.id === 'mega') {
+      new VideoHls('https://unlimited1-cl-isp.dps.live/mega/mega.smil/playlist.m3u8', 'play', this.isMobile, 'videoPreview');
+    } else {
+      new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
+    }
 
-    new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
 
+    
+    let tiempoCumplido = false;
+    this.intervalChannelDuration = 0;
 
-    // if (this.loadedChannels && this.isMobile) {
-    //   if (localStorage.getItem('mute') == '1') {
-    //     this.playerMuteUnmuteAttribute = 'volume-mute';
-    //     this.isPlayerMuted = true;
-    //     localStorage.setItem('mute', '1');
-    //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-    //   }
-    // }
-
-    this.previewChannelsInterval = setInterval(() => {
-      this.prevChannels = [];
-      for (let i = 0; i < this.channels.length; i++) {
-        if (this.channels[i].url.includes('https') && this.channels[i].iframe == false && this.channels[i].estado == 1) {
-          this.prevChannels.push(i);
+    this.timeChannelPreview = setInterval(() => {
+      if (!tiempoCumplido) {
+        this.intervalChannelDuration += 0.00165;
+        if (this.intervalChannelDuration >= 1) {
+          new VideoHls('', 'pause', this.isMobile, 'videoPreview');
+          tiempoCumplido = true;
         }
       }
-
-      const random = Math.floor(Math.random() * this.prevChannels.length);
-      this.channelIndex = this.prevChannels[random];
-
-      this.ranChannel = this.channels[this.channelIndex];
-      if (this.ranChannel.id === 'canal13') {
-        new VideoHls(this.getDinamicUrlChannel('canal13'), 'play', this.isMobile, 'videoPreview');
-      } else if (this.ranChannel.id === 'chilevision') {
-        new VideoHls(this.getDinamicUrlChannel('chilevision'), 'play', this.isMobile, 'videoPreview');
-      } else {
-        new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
-      }
-    }, 15000);
+    }, 50);
   }
 
   getDinamicUrlChannel(id: string) {
+
     switch (id) {
       case 'chilevision':
         this.channelService.getChilevision().subscribe((data) => {
           let t = data;
-          return 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+          new VideoHls('https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token, 'play', this.isMobile, 'videoPreview');
 
         });
         break;
       case 'canal13':
         this.channelService.getCanal13().subscribe((data) => {
           let t = data;
-          return 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-
+          new VideoHls('https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken, 'play', this.isMobile, 'videoPreview');
         });
         break;
     }
+
   }
 
   stopPreviewChannel() {
-    clearInterval(this.previewChannelsInterval);
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     this.previewAutorized = false;
   }
 
-  autorizePreview() {
-    this.previewAutorized = true;
-
-    setTimeout(() => {
-      this.getPreviewChannel();
-    }, 1000);
-
-  }
 
   getCurrentPrograma(x: any) {
     let y: string = '';
@@ -426,9 +404,14 @@ export class HomePage {
   }
 
   async showInterstitial() {
-    
+
     AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
-      new VideoHls('', 'pause', this.isMobile, 'videoPreview');
+      // new VideoHls('', 'stop', this.isMobile, 'videoPreview');
+    });
+    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+      setTimeout(() => {
+        // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
+      });
     });
 
     const options: AdOptions = {
@@ -529,10 +512,8 @@ export class HomePage {
   //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS:::::::::
   async openChannelUrl(url: string, id: string) {
     const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
-
-    if (canopen.value) {
-      this.stopPreviewChannel();
-    }
+    
+    this.stopPreviewChannel();
 
     setTimeout(async () => {
       if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
@@ -635,20 +616,6 @@ export class HomePage {
   async openWebSite(website: string) {
     window.open(website, "_blank");
   }
-
-  // muteUnMutePlayer() {
-  //   if (this.isPlayerMuted && localStorage.getItem('mute') == '1') {
-  //     this.playerMuteUnmuteAttribute = 'volume-high';
-  //     this.isPlayerMuted = false;
-  //     localStorage.setItem('mute', '0');
-  //     new VideoHls('', 'unmute', this.isMobile, 'videoPreview');
-  //   } else {
-  //     this.playerMuteUnmuteAttribute = 'volume-mute';
-  //     this.isPlayerMuted = true;
-  //     localStorage.setItem('mute', '1');
-  //     new VideoHls('', 'mute', this.isMobile, 'videoPreview');
-  //   }
-  // }
 
   //:::::::SOLO PARA EXCEPCIONES EN CASO QUE SE NECESITE QUE EL CURSOR QUEDE EN EL LUGAR DONDE SE ASIGNE ESTA FUNCION::::: 
   emptyFunction() {

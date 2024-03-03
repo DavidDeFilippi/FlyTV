@@ -21,6 +21,9 @@ function VideoHls(videoSource, action, isMobile, playerID) {
       hls.subtitleDisplay = false;
     }
     video.play();
+    if(playerID == "videoPreview"){
+      hls.levels[0];
+    };
   }
   else if (videoSource != '' && action == 'play') {
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -74,7 +77,6 @@ function getListeners(isMobile, playerID){
       if(playerID == "video"){
         video.setAttribute("controls","");
       }
-      
     }
   });
 }

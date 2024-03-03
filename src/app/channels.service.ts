@@ -33,4 +33,8 @@ export class ChannelsService {
   getStatusChannels(): Observable<any> {
     return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/estadoCanales.json`, {responseType: 'json' });
   }
+
+  getCanalesPrincipales(): Observable<any> {
+    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/idcanalesprincipales.json`, {responseType: 'json' });
+  }
 }
