@@ -82,16 +82,16 @@ export class ReproductorPage implements OnInit {
 
           });
           break;
-        case 'canal13':
-          this.channelService.getCanal13().subscribe((data) => {
-            let t = data;
-            this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-            // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
-            // this.presentToast('bottom');
-            this.playVideo();
+        // case 'canal13':
+        //   this.channelService.getCanal13().subscribe((data) => {
+        //     let t = data;
+        //     this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+        //     // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
+        //     // this.presentToast('bottom');
+        //     this.playVideo();
 
-          });
-          break;
+        //   });
+        //   break;
         default:
           // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
           // this.presentToast('bottom');
@@ -114,7 +114,8 @@ export class ReproductorPage implements OnInit {
     props.pipEnabled = true;
     props.displayMode = "all";
     props.title = this.channel.name;
-    props.smallTitle = this.current+'\n'+this.next;
+    props.smallTitle = this.current+'\n - '+this.next;
+    props.artwork = this.channel.logo;
 
     // if(this.channel.subtitle != null) props.subtitle = this.channel.subtitle;
     // if(this.channel.stlang != null) props.stlang = this.channel.stlang;
@@ -161,12 +162,15 @@ export class ReproductorPage implements OnInit {
       }, false);
     return;
   }
-
   // Action when the player ended or exit
   private playerLeave() {
+    this.videoPlayer.exitPlayer();
     this.navRoute.navigate(['/home']);
     return;
   }
+
+
+  // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
   // Lock to portrait
   lockToPortrait() {
     this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
@@ -216,20 +220,20 @@ export class ReproductorPage implements OnInit {
           }
         });
         break;
-      case 'canal13':
-        this.channelService.getCanal13().subscribe(async (data) => {
-          let t = data;
-          this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-          if (canopen.value) {
-            window.open('vlc://' + this.channel.url, "_blank");
-          } else {
-            await Share.share({
-              title: 'Selecciona aplicacion de video',
-              url: this.channel.url,
-              dialogTitle: 'Selecciona aplicacion de video',
-            });
-          }
-        });
+      // case 'canal13':
+      //   this.channelService.getCanal13().subscribe(async (data) => {
+      //     let t = data;
+      //     this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+      //     if (canopen.value) {
+      //       window.open('vlc://' + this.channel.url, "_blank");
+      //     } else {
+      //       await Share.share({
+      //         title: 'Selecciona aplicacion de video',
+      //         url: this.channel.url,
+      //         dialogTitle: 'Selecciona aplicacion de video',
+      //       });
+      //     }
+      //   });
         break;
       default:
         if (canopen.value) {
