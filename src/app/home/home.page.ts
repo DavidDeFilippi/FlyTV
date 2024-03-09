@@ -36,14 +36,11 @@ declare var VideoHls: any;
 export class HomePage {
 
   channels: any;
-  channelIndex: number = 0;
   channelsBackUp: any;
-  rewardBlocked: any;
   category: any
   categories: any;
   parrilla: any;
   htmlSelectOption: any;
-  selected_value: string = '';
   channelModal: any;
   isModalOpen = false;
   isModalShareAppOpen = false;
@@ -62,6 +59,7 @@ export class HomePage {
   previewAutorized: boolean = false;
   intervalChannelDuration: any;
   timeChannelPreview: any;
+  isDesktopFullScreen: boolean = false;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -71,23 +69,14 @@ export class HomePage {
     private alertController: AlertController,
     private platform: Platform,
     private menuCtrl: MenuController
-  ) { }
-
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowLeft' && !this.globalVar.getExitDialog()) {
-      this.openDesktoptMenu(true);
-    } else if (event.key === 'ArrowRight') {
-      this.openDesktoptMenu(false);
-    }
-  }
+  ) {}
 
   async ionViewWillEnter() {
 
     this.enableChannelPreview = true;
 
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
-    new VideoHls('', 'stop', this.isMobile, 'video');
+    new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
 
 
     this.isMobile = this.globalVar.isMobile();
@@ -100,6 +89,9 @@ export class HomePage {
     }
 
     if (this.globalVar.getFirstLoadingChannels()) {
+      if(!this.isMobile && localStorage.getItem('xa88') === null){
+        localStorage.setItem('xa88', '1');
+      }
       await this.getChannels();
     } else {
       await this.getStatusChannels();
@@ -111,6 +103,7 @@ export class HomePage {
 
   }
 
+  // :::::: CARGA TODOS LOS CANALES Y SUS COMPLEMENTOS::::::::::
   async getChannels() {
     const loading = await this.loadingCtrl.create({
       message: 'Cargando canales',
@@ -120,6 +113,7 @@ export class HomePage {
       this.channels = data;
       this.channelsBackUp = data;
       if (this.globalVar.getFirstLoadingChannels()) {
+        //La parrilla de los canales y el estado de estos sólo los carga al inicio de la app
         this.getParrilla();
         this.getStatusChannels();
       }
@@ -150,6 +144,7 @@ export class HomePage {
     });
   }
 
+// :::::::::::OBTIENE EL ESTADO DE LOS CANALES QUE EL SERVIDOR VERIFICA ACTIVAMENTE:::::::::::
   async getStatusChannels() {
     this.channelService.getStatusChannels().subscribe((data) => {
       this.statusChannels = data;
@@ -164,23 +159,18 @@ export class HomePage {
     });
   }
 
+  // ::::::::::OBTIENE DESDE EL SEVIDOR LA PROGRAMACION DEL DIA PARA LOS CANALES QUE LOS TENGA DISPONIBLE:::::::::
   async getParrilla() {
     this.channelService.getParrilla().subscribe((data) => {
-
       this.parrilla = data;
-
       for (let i = 0; i < this.channels.length; i++) {
         this.channels[i].parrilla = [];
         for (let j = 0; j < this.parrilla.length; j++) {
           if (this.channels[i].id == this.parrilla[j].id) {
-
             this.channels[i].parrilla = this.parrilla[j].parrilla;
             this.channelsBackUp[i].parrilla = this.parrilla[j].parrilla;
-
             this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
             this.channels[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
-
-
             this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
             this.channelsBackUp[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
           }
@@ -189,18 +179,15 @@ export class HomePage {
     });
   }
 
+  // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
   getPreviewChannel(id: string) {
-
-    console.log('id: ' + id);
-
+    new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     for (let i = 0; i < this.channels.length; i++) {
       if (this.channels[i].id === id && this.channels[i].iframe == false) {
         this.ranChannel = this.channels[i]
       }
     }
-
     this.previewAutorized = true;
-
     if (this.ranChannel.id === 'chilevision') {
       this.getDinamicUrlChannel('chilevision');
     } else if (this.ranChannel.id === 'mega') {
@@ -208,24 +195,34 @@ export class HomePage {
     } else {
       new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
     }
-    
     this.getRelojDuracionVistaPreviaCanales();
-
   }
 
+  // :::::::::::::::::::::::DETERMINA CUANTO TIEMPO SE PROGRAMA A LA VISTA PREVIA::::::::::::::::::::
+  //EL VALOR MAXIMO DE CAGRA ES 1 PARA LLEGAR AL 100%.
+  // EL CALCULO SERIA 1 / (CANTIDAD DE SEGUNDOS QUE QUERAMOS QUE DURE LA VISTA PREVIA)
+  // EL DELAY O MILISEGUNDOS DEL setInterval(()=>{},milisegundos) PUEDE SER MENOR PARA DARLE MAS SUAVIDAD
+  // AL ion-progress-bar PERO SE DEBEN AJUSTAR LOS CALCULOS
   getRelojDuracionVistaPreviaCanales() {
+    let onInterval = true;
     clearInterval(this.timeChannelPreview);
     this.intervalChannelDuration = 0;
+
     this.timeChannelPreview = setInterval(() => {
       if (this.intervalChannelDuration < 1) {
-        this.intervalChannelDuration += 0.066666667;
+        this.intervalChannelDuration += 0.033333333;
         console.log(this.intervalChannelDuration);
       } else {
-        new VideoHls('', 'pause', this.isMobile, 'videoPreview');
+        if(onInterval){
+          onInterval = false;
+          new VideoHls('', 'pause', this.isMobile, 'videoPreview');
+          console.log(this.intervalChannelDuration);
+        }
       }
     }, 1000);
   }
 
+  // ::::::::::::::::::PARA OBTENER LA URL CON TOKEN EN UN CANAL::::::::::::
   getDinamicUrlChannel(id: string) {
     switch (id) {
       case 'chilevision':
@@ -243,12 +240,15 @@ export class HomePage {
     }
   }
 
+  // ::::::::::::PARA DETENER LA VISTA PREVIA Y  DEJAR LA VISTA GENERICA DE SELECCION DE UN CANAL:::::::::::::
   stopPreviewChannel() {
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     this.previewAutorized = false;
+    clearInterval(this.timeChannelPreview);
+
   }
 
-
+  // :::::::::::::DETERMINA QUE PROGRAMA SE ESTA TRANSMITIENDO EN UN CANAL::::::::::::::::
   getCurrentPrograma(x: any) {
     let y: string = '';
     let today = new Date();
@@ -271,6 +271,7 @@ export class HomePage {
     return y;
   }
 
+  // :::::::::::::DETERMINA QUE PROGRAMA SE TRANSMITIRA DESPUES EN UN CANAL::::::::::::::::
   getNextPrograma(x: any) {
     let y: string = '';
     let today = new Date();
@@ -288,61 +289,7 @@ export class HomePage {
     return y;
   }
 
-  async getCategory(c: string) {
-
-    if (c === 'todos' || c === '' || c === undefined) {
-      if (this.isMobile) {
-
-        this.globalVar.setGlobalCategory('todos');
-
-        for (let i = 0; i < this.channels.length; i++) {
-          this.channels[i].enabled = true;
-        }
-
-      } else {
-        this.globalVar.setGlobalCategory(this.categories[0]);
-
-        this.category = this.globalVar.getGlobalCategory();
-
-        for (let i = 0; i < this.channels.length; i++) {
-          if (this.channels[i].categoria === this.globalVar.getGlobalCategory()) {
-            this.channels[i].enabled = true;
-          } else {
-            this.channels[i].enabled = false;
-          }
-
-        }
-
-      }
-
-    } else {
-
-      for (let i = 0; i < this.channels.length; i++) {
-        if (this.channels[i].categoria === c) {
-          this.channels[i].enabled = true;
-        } else {
-          this.channels[i].enabled = false;
-        }
-
-      }
-
-      this.category = c;
-
-    }
-
-    this.globalVar.setGlobalCategory(c);
-
-    if (this.isMobile) {
-      this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
-
-      for (var x of this.categories) {
-        this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
-      }
-
-      this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
-    }
-  }
-
+  // ::::::::::::LISTA TODAS LAS CATEGORIAS DE LOS CANALES DISPONIBLES::::::::
   async listCategories() {
     this.categories = [];
     for (let i = 0; i < this.channels.length; i++) {
@@ -352,7 +299,38 @@ export class HomePage {
     this.categories = [...new Set(this.categories)];
   }
 
+  // :::::::::::::::MUESTRA LOS CANALES DE LA CATEGORIA SELECCIONADA::::::::::
+  async getCategory(c: string) {
+    if (c === 'todos' || c === '' || c === undefined) {
+        this.globalVar.setGlobalCategory('todos');
+        for (let i = 0; i < this.channels.length; i++) {
+          this.channels[i].enabled = true;
+        }
+    } else {
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].categoria === c) {
+          this.channels[i].enabled = true;
+        } else {
+          this.channels[i].enabled = false;
+        }
+      }
+      this.category = c;
+    }
+    this.globalVar.setGlobalCategory(c);
+    if (this.isMobile) {
+      this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
+      for (var x of this.categories) {
+        this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
+      }
+      this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
+    }
+  }
 
+  // ::::::::::::::::::::::::::
+  // :::::::::INICIO ADS:::::::
+  // ::::::::::::::::::::::::::
+
+  // :::::::::::INICIACION PARA LOS SERVICIOS DE GOOGLE ADMOB::::::::::::
   async initialize() {
     const { status } = await AdMob.trackingAuthorizationStatus();
 
@@ -368,47 +346,7 @@ export class HomePage {
       initializeForTesting: false,
     });
   }
-
-  async showInterstitial() {
-
-    AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
-      // new VideoHls('', 'stop', this.isMobile, 'videoPreview');
-    });
-    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-      setTimeout(() => {
-        // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
-      });
-    });
-
-    const options: AdOptions = {
-      adId: 'ca-app-pub-4427288659732696/1947824722',
-      isTesting: false,
-    }
-
-    await AdMob.prepareInterstitial(options);
-    await AdMob.showInterstitial();
-  }
-
-
-  //::::::No se usa pero hay que revisarlo ya que no se ejecuta::::::::::
-  // async showRewardVideo() {
-
-  //   AdMob.addListener(
-  //     RewardAdPluginEvents.Rewarded,
-  //     (reward: AdMobRewardItem) => {
-  //       console.log('REWARD: ', reward);
-  //     }
-  //   );
-
-  //   const options: RewardAdOptions = {
-  //     adId: 'ca-app-pub-4427288659732696/5982400519',
-  //     isTesting: false,
-  //   }
-
-  //   await AdMob.prepareRewardVideoAd(options);
-  //   await AdMob.showRewardVideoAd();
-  // }
-
+  // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
     if (this.isMobile) {
       this.initialize();
@@ -420,26 +358,28 @@ export class HomePage {
       }
     }
   }
-
-
-  // Lock to portrait
-  lockToPortrait() {
-    this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
+  // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
+  async showInterstitial() {
+    AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
+      // new VideoHls('', 'stop', this.isMobile, 'videoPreview');
+    });
+    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
+      setTimeout(() => {
+        // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
+      });
+    });
+    const options: AdOptions = {
+      adId: 'ca-app-pub-4427288659732696/1947824722',
+      isTesting: false,
+    }
+    await AdMob.prepareInterstitial(options);
+    await AdMob.showInterstitial();
   }
-  // Lock to landscape
-  lockToLandscape() {
-    this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-  }
+  // ::::::::::::::::::::::::::
+  // :::::::::FIN ADS::::::::::
+  // ::::::::::::::::::::::::::
 
-  // Unlock screen orientation 
-  unlockScreenOrientation() {
-    this.so.unlock();
-  }
-
-  getSanitizedHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-  }
-
+  // :::::::: PARA FILTRAR LAS CATEGORIAS::::::::::
   handleChange(e: any) {
     // console.log('ionChange fired with value: ' + e.detail.value);
     this.getCategory(e.detail.value);
@@ -448,8 +388,7 @@ export class HomePage {
     }
   }
 
-  //MODAL PROGRAMACION DEL CANAL O PARRILLA O COMO SE LLAME
-
+  //:::::::ABRE MODAL PARA VER LA PROGRAMACION DE UN CANAL:::::::::
   setOpen(isOpen: boolean, ch?: any) {
     if (isOpen) {
       this.channelModal = ch;
@@ -470,23 +409,20 @@ export class HomePage {
     }
   }
 
-  //:::::::ABRE MODAL PARA COMPARTIR LA APP CON POTENCIALES USUARIOS:::::::::
+  //:::::::ABRE MODAL PARA COMPARTIR LA APP:::::::::
   openShareAppModal(isOpen: boolean) {
     this.isModalShareAppOpen = isOpen;
   }
 
-  //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS:::::::::
+  //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS (SIRVE OPCIONALMENTE PARA URL DE VIDEOS HTTP):::::::::
   async openChannelUrl(url: string, id: string) {
     const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
-
     this.stopPreviewChannel();
-
     setTimeout(async () => {
       if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
         this.simpleLoading(5000, '');
         await this.showAds();
       } else {
-
         this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
         switch (id) {
           case 'chilevision':
@@ -539,35 +475,17 @@ export class HomePage {
   }
 
 
-  //:::::::PARA COMPARTIR EN REDES SOCIALES::::::
-  async openShareApp() {
-    await Share.share({
-      title: 'Comparténos!',
-      url: 'https://play.google.com/store/apps/details?id=com.defilippi.flytv',
-      dialogTitle: 'Selecciona aplicacion',
-      text: 'Prueba la aplicacion de Tv En vivo Fly TV, disponible en Google Play',
-    });
-  }
+  
 
-  //::::::PARA QUE REBOTE LA PELOTA::::::
-  bounceBaloon() {
-    this.aspck = this.aspck + 1;
-    if (this.aspck == 20) {
-      this.aspck = 0;
-      localStorage.setItem('xa88', '1');
-      this.updateChannels();
+  //::::::FUNCIONES PARA VERSION ANDROID TV Y DESKTOP::::::
+  
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Backspace' || event.key === 'Escape') && !this.globalVar.getExitDialog() && this.isDesktopFullScreen) {
+      this.isDesktopFullScreen = false;
     }
   }
 
-  async simpleLoading(milliseconds: number, message: string) {
-    const loading = await this.loadingCtrl.create({
-      message: message,
-      duration: milliseconds,
-    });
-    loading.present();
-  }
-
-  //::::::ABRE EL MENU DE CATEGORIAS EN LA VERSION DESKTOP O ATV::::::
   openDesktoptMenu(x: boolean) {
     if (!this.DesktopMenuIsLocked) {
       if (x) {
@@ -578,9 +496,78 @@ export class HomePage {
     }
   }
 
+  playDesktopChannel(id: string){
+
+    let deskChannel = [];
+
+    for (let i = 0; i < this.channels.length; i++) {
+      if (this.channels[i].id === id && this.channels[i].iframe == false) {
+        deskChannel = this.channels[i]
+      }
+    }
+
+    new VideoHls(deskChannel.url, 'play', this.isMobile, 'videoDesktop');
+
+    setTimeout(()=>{
+    this.isDesktopFullScreen = true;
+    },3000);
+
+  }
+
+  // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  // :::::::::::::::::::::FUNCIONES GENERICAS::::::::::::::::
+  // ::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
   // :::::::::::: PARA ABRIR SITIOS WEB EXTERNOS:::::::::
   async openWebSite(website: string) {
     window.open(website, "_blank");
+  }
+
+  // :::::::::::: PARA CREAR UNA ANIMACION DE CARGA. PUEDE SER CON O SIN MENSAJE Y SE CONFIGURA LA DURACION::::::::
+  async simpleLoading(milliseconds: number, message: string) {
+    const loading = await this.loadingCtrl.create({
+      message: message,
+      duration: milliseconds,
+    });
+    loading.present();
+  }
+
+  //:::::::PARA COMPARTIR EN REDES SOCIALES::::::
+  async openShareApp() {
+    await Share.share({
+      title: 'Comparténos!',
+      url: 'https://play.google.com/store/apps/details?id=com.defilippi.flytv',
+      dialogTitle: 'Selecciona aplicacion',
+      text: 'Prueba la aplicacion de Tv En vivo Fly TV, disponible en Google Play',
+    });
+  }
+
+    // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
+    lockToPortrait() {
+      this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
+    }
+    lockToLandscape() {
+      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
+    }
+    unlockScreenOrientation() {
+      this.so.unlock();
+    }
+    // :::::::FIN AL COMENTARIO ANTERIOR:::::::::::
+  
+  // ::::::::ESTO "LIMPIA EL CODIGO HTML GENERADO PROGRAMATICAMENTE PARA RENDERIZARLO EN EL DOCUMENTO":::::::::::::
+    getSanitizedHtml(html: string): SafeHtml {
+      return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+
+  //::::::PARA QUE REBOTE LA PELOTA::::::
+  bounceBaloon() {
+    this.aspck = this.aspck + 1;
+    if (this.aspck == 20) {
+      this.aspck = 0;
+      localStorage.setItem('xa88', '1');
+      this.updateChannels();
+    }
   }
 
   //:::::::SOLO PARA EXCEPCIONES EN CASO QUE SE NECESITE QUE EL CURSOR QUEDE EN EL LUGAR DONDE SE ASIGNE ESTA FUNCION::::: 

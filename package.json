@@ -34,6 +34,7 @@
     "@ionic-native/core": "^5.36.0",
     "@ionic-native/screen-orientation": "^5.36.0",
     "@ionic/angular": "^7.0.0",
+    "capacitor-video-player": "^5.5.1",
     "cordova-plugin-screen-orientation": "^3.0.3",
     "ionicons": "^7.0.0",
     "jsmpeg-player": "^3.0.3",

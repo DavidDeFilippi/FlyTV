@@ -83,6 +83,18 @@ ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
   margin: 0px;
   padding: 0px;
 }
+
+#videoDesktop {
+  height: 50%;
+  width: 100%;
+  background: url('/assets/loading.gif');
+  background-size: 10% 30%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: black !important;
+  margin: 0px;
+  padding: 0px;
+}
 video::-webkit-media-controls-fullscreen-button,
 video::-webkit-media-controls-play-button,
 video::-webkit-media-controls-timeline,

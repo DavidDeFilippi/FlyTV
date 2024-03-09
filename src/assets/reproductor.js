@@ -1,15 +1,6 @@
 var video;
 var hls;
 
-// document.addEventListener(
-//   "keydown",
-//   (event) => {
-//     console.log(event.key);
-//     document.getElementById('keycodelistener').innerHTML = event.key;
-//   },
-//   false,
-// );
-
 function VideoHls(videoSource, action, isMobile, playerID) {
   if (Hls.isSupported() && videoSource != '' && action == 'play') {
     video = document.getElementById(playerID);
@@ -33,6 +24,7 @@ function VideoHls(videoSource, action, isMobile, playerID) {
       });
     }
   }else if(videoSource == '' && action == 'pause'){
+    hls.stopLoad();
     var vid = document.getElementById(playerID) ;
     vid.pause();
   }else if(videoSource == '' && action == 'mute'){
@@ -49,6 +41,10 @@ function VideoHls(videoSource, action, isMobile, playerID) {
   }else if(videoSource == '' && action == 'resume'){
     var vid = document.getElementById(playerID) ;
     vid.play();
+  }else if(videoSource == '' && action == 'enableFullscreen'){
+    var vid = document.getElementById(playerID) ;
+    vid.requestFullscreen();
+    vid.setAttribute("controlsList","nofullscreen");
   }
 }
 
@@ -63,7 +59,7 @@ function getListeners(isMobile, playerID){
       if(playerID == 'video'){
         document.getElementById(playerID).style.backgroundImage = "url(../../assets/videoError.png)";
         document.getElementById(playerID).style.backgroundSize = "100px";
-      }else if(playerID == 'videoPreview'){
+      }else if(playerID == 'videoPreview' || playerID == 'videoDesktop'){
         document.getElementById(playerID).style.backgroundImage = "none";
         // document.getElementById(playerID).style.backgroundSize = "20px";
       }
@@ -73,6 +69,16 @@ function getListeners(isMobile, playerID){
   hls.on(Hls.Events.BUFFER_CREATED, function (event, data) {
     
     document.getElementById(playerID).style.backgroundImage = "none";
+    if(isMobile){
+      if(playerID == "video"){
+        video.setAttribute("controls","");
+      }
+    }
+  });
+
+  hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
+    
+    document.getElementById(playerID).style.backgroundImage = "url(../../assets/loading.gif)";
     if(isMobile){
       if(playerID == "video"){
         video.setAttribute("controls","");
