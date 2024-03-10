@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ChannelsService } from '../channels.service';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
@@ -21,25 +21,24 @@ declare var VideoHls: any;
   providers: [ChannelsService]
 
 })
-export class ReproductorPage implements OnInit {
+export class ReproductorPage implements OnInit, AfterViewInit {
   id: any;
-  channel: any;
   channels: any;
-  current: any;
-  next: any;
+  channel: any = {id: '',name: '', url: '', current: '', next: '', logo: ''};
   isMobile: any;
-  videoPlayer: any;
-  devicePlatform: string = 'web';
-  handlerPlay: any;
-  handlerPause: any;
-  handlerEnded: any;
-  handlerReady: any;
-  handlerExit: any;
+  
+  private platform: string = 'web';
+  private videoPlayer: any;
+  private handlerPlay: any;
+  private handlerPause: any;
+  private handlerEnded: any;
+  private handlerReady: any;
+  private handlerExit: any;
 
   constructor(private channelService: ChannelsService,
     private activatedRoute: ActivatedRoute,
     private so: ScreenOrientation,
-    private platform: Platform,
+    private plt: Platform,
     private navRoute: Router,
     private toastController: ToastController,
     private globalVar: GlobalVarService) { }
@@ -47,8 +46,6 @@ export class ReproductorPage implements OnInit {
   ngOnInit() {
 
     // new VideoHls('', 'stop', this.isMobile, 'video');
-
-
     this.isMobile = this.globalVar.isMobile();
 
     if (this.isMobile) {
@@ -59,50 +56,27 @@ export class ReproductorPage implements OnInit {
       this.unlockScreenOrientation();
     }
 
-    this.id = this.activatedRoute.snapshot.queryParamMap.get('id');
-    this.current = this.activatedRoute.snapshot.queryParamMap.get('current');
-    this.next = this.activatedRoute.snapshot.queryParamMap.get('next');
+    this.channel.id = this.activatedRoute.snapshot.queryParamMap.get('id');
+    this.channel.name = this.activatedRoute.snapshot.queryParamMap.get('name');
+    this.channel.url = this.activatedRoute.snapshot.queryParamMap.get('url');
+    this.channel.current = this.activatedRoute.snapshot.queryParamMap.get('current');
+    this.channel.next = this.activatedRoute.snapshot.queryParamMap.get('next');
+    this.channel.logo = this.activatedRoute.snapshot.queryParamMap.get('logo');
 
-    this.channelService.getChannels().subscribe((data) => {
-      this.channels = data;
-      for (var obj of this.channels) {
-        if (this.id == obj.id) {
-          this.channel = obj;
-          break;
-        }
-      }
-      switch (this.channel.id) {
-        case 'chilevision':
-          this.channelService.getChilevision().subscribe((data) => {
-            let t = data;
-            this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
-            // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
-            // this.presentToast('bottom');
-            this.playVideo();
-
-          });
-          break;
-        // case 'canal13':
-        //   this.channelService.getCanal13().subscribe((data) => {
-        //     let t = data;
-        //     this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-        //     // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
-        //     // this.presentToast('bottom');
-        //     this.playVideo();
-
-        //   });
-        //   break;
-        default:
-          // new VideoHls(this.channel.url, 'play', this.isMobile, 'video');
-          // this.presentToast('bottom');
-          this.playVideo();
-      }
-    });
+    // this.channelService.getChannels().subscribe((data) => {
+    //   this.channels = data;
+    //   for (var obj of this.channels) {
+    //     if (this.id == obj.id) {
+    //       this.channel = obj;
+    //       break;
+    //     }
+    //   }
+    // });
   }
 
-  async playVideo() {
+  async ngAfterViewInit() {
     const info = await Device.getInfo();
-    this.devicePlatform = info.platform;
+    this.platform = info.platform;
     this.videoPlayer = CapacitorVideoPlayer;
     // add plugin listeners
     await this.addListenersToPlayerPlugin();
@@ -114,15 +88,22 @@ export class ReproductorPage implements OnInit {
     props.pipEnabled = true;
     props.displayMode = "all";
     props.title = this.channel.name;
-    props.smallTitle = this.current+'\n - '+this.next;
+    props.smallTitle = this.channel.current+'\n'+this.channel.next;
     props.artwork = this.channel.logo;
-
-    // if(this.channel.subtitle != null) props.subtitle = this.channel.subtitle;
-    // if(this.channel.stlang != null) props.stlang = this.channel.stlang;
+    props.chromecast = true;
     const res: any = await this.videoPlayer.initPlayer(props);
   }
 
-
+  async ngOnDestroy(): Promise<void> {
+    // Remove the plugin listeners
+    await this.handlerPlay.remove();
+    await this.handlerPause.remove();
+    await this.handlerEnded.remove();
+    await this.handlerReady.remove();
+    await this.handlerExit.remove();
+    await this.videoPlayer.stopAllPlayers();
+    return;
+  }
   // *******************
   // Private Functions *
   // *******************
@@ -164,7 +145,7 @@ export class ReproductorPage implements OnInit {
   }
   // Action when the player ended or exit
   private playerLeave() {
-    this.videoPlayer.exitPlayer();
+    this.videoPlayer = null;
     this.navRoute.navigate(['/home']);
     return;
   }
@@ -184,58 +165,12 @@ export class ReproductorPage implements OnInit {
   unlockScreenOrientation() {
     this.so.unlock();
   }
-
-  //muestra la info del canal al entrar
-  async presentToast(position: 'top' | 'middle' | 'bottom') {
-    const toast = await this.toastController.create({
-      header: this.channel.name,
-      message: this.current !== '' ? '- ' + this.current.slice(6) + '<br>- ' + this.next : '',
-      duration: 3000,
-      position: position,
-      color: 'light',
-      cssClass: 'custom-toast'
-    });
-
-    await toast.present();
-  }
-
+  
   async openChannelUrl() {
 
     const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
 
     this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-    switch (this.channel.id) {
-      case 'chilevision':
-        this.channelService.getChilevision().subscribe(async (data) => {
-          let t = data;
-          this.channel.url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
-          if (canopen.value) {
-            window.open('vlc://' + this.channel.url, "_blank");
-          } else {
-            await Share.share({
-              title: 'Selecciona aplicacion de video',
-              url: this.channel.url,
-              dialogTitle: 'Selecciona aplicacion de video',
-            });
-          }
-        });
-        break;
-      // case 'canal13':
-      //   this.channelService.getCanal13().subscribe(async (data) => {
-      //     let t = data;
-      //     this.channel.url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
-      //     if (canopen.value) {
-      //       window.open('vlc://' + this.channel.url, "_blank");
-      //     } else {
-      //       await Share.share({
-      //         title: 'Selecciona aplicacion de video',
-      //         url: this.channel.url,
-      //         dialogTitle: 'Selecciona aplicacion de video',
-      //       });
-      //     }
-      //   });
-        break;
-      default:
         if (canopen.value) {
           window.open('vlc://' + this.channel.url, "_blank");
         } else {
@@ -245,8 +180,6 @@ export class ReproductorPage implements OnInit {
             dialogTitle: 'Selecciona aplicacion de video',
           });
         }
-    }
-
   }
 
 }

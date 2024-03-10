@@ -164,9 +164,9 @@
 
             <ion-label *ngIf="previewAutorized" >
               <ion-button *ngIf="previewAutorized" style="margin-top: 5px;width: 100%; margin-left: 0px;" color="medium" expand="full"
-                [attr.id]="ranChannel.id" [routerLink]="['/reproductor']" [queryParams]="{id: ranChannel.id ,
-                     current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '',
-                      next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : ''}"
+                [attr.id]="ranChannel.id" 
+                [routerLink]="['/reproductor']" 
+                [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
                 (click)="stopPreviewChannel()">Continuar Viendo</ion-button>
             </ion-label>
 

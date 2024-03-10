@@ -188,13 +188,7 @@ export class HomePage {
       }
     }
     this.previewAutorized = true;
-    if (this.ranChannel.id === 'chilevision') {
-      this.getDinamicUrlChannel('chilevision');
-    } else if (this.ranChannel.id === 'mega') {
-      new VideoHls('https://unlimited1-cl-isp.dps.live/mega/mega.smil/playlist.m3u8', 'play', this.isMobile, 'videoPreview');
-    } else {
-      new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
-    }
+    new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
     this.getRelojDuracionVistaPreviaCanales();
   }
 
@@ -211,34 +205,32 @@ export class HomePage {
     this.timeChannelPreview = setInterval(() => {
       if (this.intervalChannelDuration < 1) {
         this.intervalChannelDuration += 0.033333333;
-        console.log(this.intervalChannelDuration);
       } else {
         if(onInterval){
           onInterval = false;
           new VideoHls('', 'pause', this.isMobile, 'videoPreview');
-          console.log(this.intervalChannelDuration);
         }
       }
     }, 1000);
   }
 
   // ::::::::::::::::::PARA OBTENER LA URL CON TOKEN EN UN CANAL::::::::::::
-  getDinamicUrlChannel(id: string) {
-    switch (id) {
-      case 'chilevision':
-        this.channelService.getChilevision().subscribe((data) => {
-          let t = data;
-          new VideoHls('https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token, 'play', this.isMobile, 'videoPreview');
-        });
-        break;
-      case 'canal13':
-        this.channelService.getCanal13().subscribe((data) => {
-          let t = data;
-          new VideoHls('https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken, 'play', this.isMobile, 'videoPreview');
-        });
-        break;
-    }
-  }
+  // getDinamicUrlChannel(id: string) {
+  //   switch (id) {
+  //     case 'chilevision':
+  //       this.channelService.getChilevision().subscribe((data) => {
+  //         let t = data;
+  //         new VideoHls('https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token, 'play', this.isMobile, 'videoPreview');
+  //       });
+  //       break;
+  //     case 'canal13':
+  //       this.channelService.getCanal13().subscribe((data) => {
+  //         let t = data;
+  //         new VideoHls('https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken, 'play', this.isMobile, 'videoPreview');
+  //       });
+  //       break;
+  //   }
+  // }
 
   // ::::::::::::PARA DETENER LA VISTA PREVIA Y  DEJAR LA VISTA GENERICA DE SELECCION DE UN CANAL:::::::::::::
   stopPreviewChannel() {
@@ -473,9 +465,6 @@ export class HomePage {
     }, 1);
 
   }
-
-
-  
 
   //::::::FUNCIONES PARA VERSION ANDROID TV Y DESKTOP::::::
   
