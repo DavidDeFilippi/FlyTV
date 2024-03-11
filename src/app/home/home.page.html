@@ -108,7 +108,7 @@
               <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png"
                   style="width: 22px;margin-right: 10px;"></ion-col>
               <ion-col class="ion-text-right" size="auto">
-                <i class="fa-brands fa-chromecast" style="font-size: 22px; margin-right: 10px; color: rgb(255, 196, 0);" id="click-trigger"></i>
+                <i class="fa-brands fa-chromecast" style="font-size: 22px; margin-right: 10px; color: #f0c11a;" id="click-trigger"></i>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -141,15 +141,19 @@
 
 
       <div>
-        <ion-item *ngIf="enableChannelPreview" color="tertiary" style="margin: 0px; padding: 0px;" lines="none">
+        <div style="background-color: #02445e; text-align: center; padding-top: 2px;"><ion-label>Vista Previa</ion-label></div>
+        
+        <ion-item id="vistaprevia" *ngIf="enableChannelPreview" color="tertiary" style="margin: 0px; padding: 0px;" lines="none">
+
 
           <video id="videoPreview" poster="../../assets/fondotv.png" autoplay controls>
           </video>
+          
 
-          <ion-text *ngIf="!previewAutorized" style="margin-left: 5px;" class="ion-text-center">Selecciona un canal de
+          <ion-text *ngIf="!previewAutorized" style="margin-left: 5px; font-size: 15px;" class="ion-text-center">Selecciona un canal de
             la lista</ion-text>
 
-          <ion-label style="font-size: 15px;vertical-align: middle; margin-left: 10px;">
+          <ion-label style="font-size: 15px;vertical-align: middle; margin-left: 5px; padding-right: 0px;">
 
             
 
@@ -170,11 +174,11 @@
                   [attr.id]="ranChannel.id" 
                   [routerLink]="['/reproductor']" 
                   [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
-                  (click)="stopPreviewChannel()">Ver Canal</ion-button>
+                  (click)="stopPreviewChannel()">Continuar Viendo</ion-button>
             </ion-label>
 
             <ion-label *ngIf="previewAutorized" >
-                  <ion-button color="danger" expand="full" style="margin-top: 10px;width: 100%; margin-left: 0px;" (click)="stopPreviewChannel()">Cerrar</ion-button>
+                  <ion-button color="warning" expand="full" style="margin-top: 10px;width: 100%; margin-left: 0px;" (click)="stopPreviewChannel()">Cerrar</ion-button>
             </ion-label>
 
           </ion-label>
