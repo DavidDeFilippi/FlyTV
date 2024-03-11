@@ -213,25 +213,7 @@ export class HomePage {
       }
     }, 1000);
   }
-
-  // ::::::::::::::::::PARA OBTENER LA URL CON TOKEN EN UN CANAL::::::::::::
-  // getDinamicUrlChannel(id: string) {
-  //   switch (id) {
-  //     case 'chilevision':
-  //       this.channelService.getChilevision().subscribe((data) => {
-  //         let t = data;
-  //         new VideoHls('https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token, 'play', this.isMobile, 'videoPreview');
-  //       });
-  //       break;
-  //     case 'canal13':
-  //       this.channelService.getCanal13().subscribe((data) => {
-  //         let t = data;
-  //         new VideoHls('https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken, 'play', this.isMobile, 'videoPreview');
-  //       });
-  //       break;
-  //   }
-  // }
-
+  
   // ::::::::::::PARA DETENER LA VISTA PREVIA Y  DEJAR LA VISTA GENERICA DE SELECCION DE UN CANAL:::::::::::::
   stopPreviewChannel() {
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');

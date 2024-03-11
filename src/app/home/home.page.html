@@ -140,10 +140,10 @@
       </ion-list>
 
 
-      <ion-list>
-        <ion-item *ngIf="enableChannelPreview" color="tertiary" style="margin: 0; padding: 0;" lines="none">
+      <div>
+        <ion-item *ngIf="enableChannelPreview" color="tertiary" style="margin: 0px; padding: 0px;" lines="none">
 
-          <video id="videoPreview" poster="../../assets/fondotv.png" autoplay>
+          <video id="videoPreview" poster="../../assets/fondotv.png" autoplay controls>
           </video>
 
           <ion-text *ngIf="!previewAutorized" style="margin-left: 5px;" class="ion-text-center">Selecciona un canal de
@@ -151,26 +151,31 @@
 
           <ion-label style="font-size: 15px;vertical-align: middle; margin-left: 10px;">
 
-            <ion-label *ngIf="previewAutorized" style="text-align: center;" class="ion-text-left"><ion-progress-bar
-                color="danger" [value]="intervalChannelDuration"></ion-progress-bar></ion-label>
+            
 
-            <ion-label style="margin-top: 15px; font-size: 15px;" *ngIf="previewAutorized">
+            <ion-label style="margin-top: 0px; font-size: 15px;" *ngIf="previewAutorized">
               <ion-label style="margin:0px; padding: 0px;" class="ion-text-left">
                 <img class="channel-logo" style="vertical-align: middle;"
                   [src]="ranChannel.logo">{{ranChannel.name}}</ion-label>
             </ion-label>
 
+            <ion-label *ngIf="previewAutorized" style="text-align: center; margin-top: 10px;" class="ion-text-left">
+              <ion-progress-bar color="danger" [value]="intervalChannelDuration" style="margin-top: 0px;"></ion-progress-bar>
+            </ion-label>
+
 
 
             <ion-label *ngIf="previewAutorized" >
-              <ion-button *ngIf="previewAutorized" style="margin-top: 5px;width: 100%; margin-left: 0px;" color="medium" expand="full"
-                [attr.id]="ranChannel.id" 
-                [routerLink]="['/reproductor']" 
-                [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
-                (click)="stopPreviewChannel()">Continuar Viendo</ion-button>
+                  <ion-button *ngIf="previewAutorized" style="margin-top: 10px;width: 100%; margin-left: 0px;" color="medium" expand="full"
+                  [attr.id]="ranChannel.id" 
+                  [routerLink]="['/reproductor']" 
+                  [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
+                  (click)="stopPreviewChannel()">Ver Canal</ion-button>
             </ion-label>
 
-            <ion-label style="font-size: 15px;">O selecciona otro</ion-label>
+            <ion-label *ngIf="previewAutorized" >
+                  <ion-button color="danger" expand="full" style="margin-top: 10px;width: 100%; margin-left: 0px;" (click)="stopPreviewChannel()">Cerrar</ion-button>
+            </ion-label>
 
           </ion-label>
         </ion-item>
@@ -185,7 +190,7 @@
           </ion-label>
         </ion-item> -->
 
-      </ion-list>
+      </div>
 
 
     </ion-header>
@@ -285,13 +290,14 @@
       <!-- INSTRUCCIONES CHROMECAST -->
       <ion-popover trigger="click-trigger" triggerAction="click">
         <ng-template>
-          <ion-content class="ion-padding">
+          <ion-content class="ion-padding" style="font-size: 15px;">
 
-            <h4>Presentamos nuestro nuevo reproductor... con Chromecast!</h4>
+            <p>Hemos implementado un nuevo reproductor con Chromecast integrado!</p>
 
-            <p>Tiene las siguientes funciones:</p>
+            <p>Incluye estas funciones:</p>
 
             <ul>
+              <li>Chromecast (obviamente).</li>
               <li>PiP (La pantallita para ver los canales afuera de la App).</li>
               <li>Puedes apagar la pantalla y seguir escuchando el canal.</li>
               <li>3 tipos de pantalla: Normal, Ajustada a pantalla y Modo relleno.</li>
@@ -299,7 +305,7 @@
               <li>En tu equipo con Chromecast se mostrará el nombre, el programa actual y siguiente (si está disponible) y también el logo del canal. </li>
             </ul>
 
-            <p>Recuerda calificarnos con 5 estrellas y escribir alguna reseña (si quieres) para poder ir mejorando nuestro proyecto.</p>
+            <p>Recuerda calificarnos y dejar comentarios para poder ir mejorando nuestro proyecto.</p>
             
             <a href="https://play.google.com/store/apps/details?id=com.defilippi.flytv&pcampaignid=web_share" target="_blank" style="color: aquamarine;">Califícanos acá!</a>
 

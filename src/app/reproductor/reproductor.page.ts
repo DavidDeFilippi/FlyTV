@@ -145,7 +145,6 @@ export class ReproductorPage implements OnInit, AfterViewInit {
   }
   // Action when the player ended or exit
   private playerLeave() {
-    this.videoPlayer = null;
     this.navRoute.navigate(['/home']);
     return;
   }

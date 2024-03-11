@@ -73,15 +73,16 @@ ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
 }
 
 #videoPreview {
-  height: 110px;
-  width: 196px;
+  height: 115px;
+  width: 160px;
   // background: url('/assets/loading.gif');
   // background-size: 50px 50px;
   // background-repeat: no-repeat;
   // background-position: center;
-  // background-color: black !important;
-  margin: 0px;
-  padding: 0px;
+  background-color: black !important;
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+  padding: 0px !important;
 }
 
 #videoDesktop {
@@ -95,12 +96,21 @@ ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
   margin: 0px;
   padding: 0px;
 }
-video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-panel,
 video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-volume-slider-container,
+video::-webkit-media-controls-volume-slider,
+video::-webkit-media-controls-mute-button,
 video::-webkit-media-controls-timeline,
 video::-webkit-media-controls-current-time-display,
+video::-webkit-media-controls-timeline-container,
 video::-webkit-media-controls-time-remaining-display,
-video::-webkit-media-controls-toggle-closed-captions-button,
-video::-webkit-media-controls-volume-slider{
+video::-webkit-media-controls-seek-back-button,
+video::-webkit-media-controls-seek-forward-button,
+video::-webkit-media-controls-fullscreen-button,
+video::-webkit-media-controls-rewind-button,
+video::-webkit-media-controls-return-to-realtime-button,
+video::-webkit-media-controls-toggle-closed-captions-button
+{
   display: none !important;
 }

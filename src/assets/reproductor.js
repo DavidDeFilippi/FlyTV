@@ -78,7 +78,7 @@ function getListeners(isMobile, playerID){
 
   hls.on(Hls.Events.MEDIA_ATTACHED, function (event, data) {
     
-    document.getElementById(playerID).style.backgroundImage = "url(../../assets/loading.gif)";
+    // document.getElementById(playerID).style.backgroundImage = "url(../../assets/loading.gif)";
     if(isMobile){
       if(playerID == "video"){
         video.setAttribute("controls","");
