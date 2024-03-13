@@ -99,8 +99,6 @@ export class HomePage {
 
     }
 
-    this.showAds();
-
   }
 
   // :::::: CARGA TODOS LOS CANALES Y SUS COMPLEMENTOS::::::::::
@@ -181,6 +179,7 @@ export class HomePage {
 
   // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
   getPreviewChannel(id: string) {
+    this.showAds();
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     for (let i = 0; i < this.channels.length; i++) {
       if (this.channels[i].id === id && this.channels[i].iframe == false) {
@@ -325,6 +324,7 @@ export class HomePage {
     if (this.isMobile) {
       this.initialize();
       if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+        console.log('showInterstitial()');
         await this.showInterstitial();
         this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
       } else {
@@ -342,6 +342,7 @@ export class HomePage {
         // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
       });
     });
+    await AdMob.setApplicationMuted({muted: true});
     const options: AdOptions = {
       adId: 'ca-app-pub-4427288659732696/1947824722',
       isTesting: false,

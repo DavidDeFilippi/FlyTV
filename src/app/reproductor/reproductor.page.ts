@@ -72,6 +72,9 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     //     }
     //   }
     // });
+
+    this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+
   }
 
   async ngAfterViewInit() {
