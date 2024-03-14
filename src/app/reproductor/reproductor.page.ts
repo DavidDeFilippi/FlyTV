@@ -44,15 +44,9 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     private globalVar: GlobalVarService) { }
 
   ngOnInit() {
-
-    // new VideoHls('', 'stop', this.isMobile, 'video');
     this.isMobile = this.globalVar.isMobile();
 
     if (this.isMobile) {
-      //:::::::: STATUS BAR ::::::::::
-      // this.platform.ready().then(() => {
-      //   StatusBar.setStyle({style: Style.Dark});
-      //   StatusBar.hide();
       this.unlockScreenOrientation();
     }
 
@@ -62,16 +56,6 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     this.channel.current = this.activatedRoute.snapshot.queryParamMap.get('current');
     this.channel.next = this.activatedRoute.snapshot.queryParamMap.get('next');
     this.channel.logo = this.activatedRoute.snapshot.queryParamMap.get('logo');
-
-    // this.channelService.getChannels().subscribe((data) => {
-    //   this.channels = data;
-    //   for (var obj of this.channels) {
-    //     if (this.id == obj.id) {
-    //       this.channel = obj;
-    //       break;
-    //     }
-    //   }
-    // });
 
     this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
 
@@ -88,12 +72,9 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     props.url = this.channel.url;
     props.playerId = 'fullscreen';
     props.componentTag = 'app-reproductor';
-    props.pipEnabled = true;
-    props.displayMode = "all";
     props.title = this.channel.name;
     props.smallTitle = this.channel.current+'\n'+this.channel.next;
     props.artwork = this.channel.logo;
-    props.chromecast = true;
     const res: any = await this.videoPlayer.initPlayer(props);
   }
 
@@ -107,6 +88,7 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     await this.videoPlayer.stopAllPlayers();
     return;
   }
+  
   // *******************
   // Private Functions *
   // *******************
@@ -146,42 +128,16 @@ export class ReproductorPage implements OnInit, AfterViewInit {
       }, false);
     return;
   }
+
   // Action when the player ended or exit
   private playerLeave() {
     this.navRoute.navigate(['/home']);
     return;
   }
 
-
   // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
-  // Lock to portrait
-  lockToPortrait() {
-    this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
-  }
-  // Lock to landscape
-  lockToLandscape() {
-    this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-  }
-
   // Unlock screen orientation 
   unlockScreenOrientation() {
     this.so.unlock();
   }
-  
-  async openChannelUrl() {
-
-    const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
-
-    this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-        if (canopen.value) {
-          window.open('vlc://' + this.channel.url, "_blank");
-        } else {
-          await Share.share({
-            title: 'Selecciona aplicacion de video',
-            url: this.channel.url,
-            dialogTitle: 'Selecciona aplicacion de video',
-          });
-        }
-  }
-
 }

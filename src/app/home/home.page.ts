@@ -17,6 +17,8 @@ import {
   AdMob,
   AdMobRewardItem,
   AdOptions,
+  ApplicationMutedOptions,
+  ApplicationVolumeOptions,
   BannerAdOptions,
   BannerAdPosition,
   BannerAdSize,
@@ -306,7 +308,6 @@ export class HomePage {
   // :::::::::::INICIACION PARA LOS SERVICIOS DE GOOGLE ADMOB::::::::::::
   async initialize() {
     const { status } = await AdMob.trackingAuthorizationStatus();
-
     // console.log(status);
 
     if (status === 'notDetermined') {
@@ -318,13 +319,14 @@ export class HomePage {
       testingDevices: ['735978b4-219f-4d70-bade-7eb4b808ac5d'],
       initializeForTesting: false,
     });
+    
+    await AdMob.setApplicationMuted({muted: true});
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
     if (this.isMobile) {
       this.initialize();
       if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
-        console.log('showInterstitial()');
         await this.showInterstitial();
         this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
       } else {
@@ -342,7 +344,7 @@ export class HomePage {
         // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
       });
     });
-    await AdMob.setApplicationMuted({muted: true});
+
     const options: AdOptions = {
       adId: 'ca-app-pub-4427288659732696/1947824722',
       isTesting: false,
