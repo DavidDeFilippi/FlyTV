@@ -1,7 +1,7 @@
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { ChannelsService } from '../channels.service';
 import { GlobalVarService } from '../global-var.service';
-import { LoadingController, isPlatform } from '@ionic/angular';
+import { InfiniteScrollCustomEvent, LoadingController, isPlatform } from '@ionic/angular';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ScreenOrientation } from '@ionic-native/screen-orientation/ngx';
 import { AlertController } from '@ionic/angular';
@@ -38,7 +38,7 @@ declare var VideoHls: any;
 export class HomePage {
 
   channels: any;
-  channelsBackUp: any;
+  channelsBackUp: any = [];
   category: any
   categories: any;
   parrilla: any;
@@ -50,18 +50,19 @@ export class HomePage {
   diaNombreyMesParrilla: any;
   nombreDias = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
   nombreMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  coloresLog = { verde: '\x1b[32m%s\x1b[0m', amarillo: '\x1b[33m%s\x1b[0m', rojo: '\x1b[31m%s\x1b[0m' };
   modalParrilla: any;
   aspck: number = 0;
   isMobile: any;
-  statusChannels: any;
   DesktopMenuIsLocked: boolean = false;
-  dateYear = new Date().getFullYear();
+  ActuallyYear = new Date().getFullYear();
   enableChannelPreview: boolean = false;
   ranChannel: any;
   previewAutorized: boolean = false;
   intervalChannelDuration: any;
   timeChannelPreview: any;
   isDesktopFullScreen: boolean = false;
+  contadorCanales: number = 0;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -80,8 +81,11 @@ export class HomePage {
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
 
+    // this.isMobile = this.globalVar.isMobile();
+    this.isMobile = true;
 
-    this.isMobile = this.globalVar.isMobile();
+    //AdMob
+    this.initialize();
 
     if (this.isMobile) {
       this.lockToPortrait();
@@ -91,16 +95,10 @@ export class HomePage {
     }
 
     if (this.globalVar.getFirstLoadingChannels()) {
-      if(!this.isMobile && localStorage.getItem('xa88') === null){
-        localStorage.setItem('xa88', '1');
-      }
       await this.getChannels();
     } else {
-      await this.getStatusChannels();
-      await this.getParrilla();
-
+      await this.getTransmitiendo();
     }
-
   }
 
   // :::::: CARGA TODOS LOS CANALES Y SUS COMPLEMENTOS::::::::::
@@ -111,21 +109,18 @@ export class HomePage {
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
-      this.channelsBackUp = data;
-      if (this.globalVar.getFirstLoadingChannels()) {
-        //La parrilla de los canales y el estado de estos sólo los carga al inicio de la app
-        this.getParrilla();
-        this.getStatusChannels();
-      }
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
+      if(this.globalVar.getFirstLoadingChannels()){
+        this.getTransmitiendo();
+        this.globalVar.setFirstLoadingChannels(false);
+      }
       loading.dismiss();
-      this.globalVar.setFirstLoadingChannels(false);
-
     });
 
   }
+
   async updateChannels() {
     const loading = await this.loadingCtrl.create({
       message: 'Cargando canales',
@@ -133,50 +128,24 @@ export class HomePage {
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
-      this.channelsBackUp = data;
-      this.getParrilla();
-      this.getStatusChannels();
+      this.getTransmitiendo();
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
+      this.getTransmitiendo();
       loading.dismiss();
       this.globalVar.setFirstLoadingChannels(false);
     });
   }
 
-// :::::::::::OBTIENE EL ESTADO DE LOS CANALES QUE EL SERVIDOR VERIFICA ACTIVAMENTE:::::::::::
-  async getStatusChannels() {
-    this.channelService.getStatusChannels().subscribe((data) => {
-      this.statusChannels = data;
-      for (let i = 0; i < this.channels.length; i++) {
-        for (let j = 0; j < this.statusChannels.length; j++) {
-          if (this.channels[i].id == this.statusChannels[j].id) {
-            this.channels[i].estado = this.statusChannels[j].estado;
-            this.channelsBackUp[i].estado = this.statusChannels[j].estado;
-          }
-        }
-      }
-    });
-  }
-
   // ::::::::::OBTIENE DESDE EL SEVIDOR LA PROGRAMACION DEL DIA PARA LOS CANALES QUE LOS TENGA DISPONIBLE:::::::::
-  async getParrilla() {
-    this.channelService.getParrilla().subscribe((data) => {
-      this.parrilla = data;
-      for (let i = 0; i < this.channels.length; i++) {
-        this.channels[i].parrilla = [];
-        for (let j = 0; j < this.parrilla.length; j++) {
-          if (this.channels[i].id == this.parrilla[j].id) {
-            this.channels[i].parrilla = this.parrilla[j].parrilla;
-            this.channelsBackUp[i].parrilla = this.parrilla[j].parrilla;
-            this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
-            this.channels[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
-            this.channelsBackUp[i].transmitiendo.current = this.getCurrentPrograma(this.parrilla[j].parrilla);
-            this.channelsBackUp[i].transmitiendo.next = this.getNextPrograma(this.parrilla[j].parrilla);
-          }
-        }
+  async getTransmitiendo() {
+    for (let i = 0; i < this.channels.length; i++) {
+      if (this.channels[i].parrilla) {
+        this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.channels[i].parrilla);
+        this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
       }
-    });
+    }
   }
 
   // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
@@ -207,14 +176,14 @@ export class HomePage {
       if (this.intervalChannelDuration < 1) {
         this.intervalChannelDuration += 0.033333333;
       } else {
-        if(onInterval){
+        if (onInterval) {
           onInterval = false;
           new VideoHls('', 'pause', this.isMobile, 'videoPreview');
         }
       }
     }, 1000);
   }
-  
+
   // ::::::::::::PARA DETENER LA VISTA PREVIA Y  DEJAR LA VISTA GENERICA DE SELECCION DE UN CANAL:::::::::::::
   stopPreviewChannel() {
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
@@ -277,10 +246,10 @@ export class HomePage {
   // :::::::::::::::MUESTRA LOS CANALES DE LA CATEGORIA SELECCIONADA::::::::::
   async getCategory(c: string) {
     if (c === 'todos' || c === '' || c === undefined) {
-        this.globalVar.setGlobalCategory('todos');
-        for (let i = 0; i < this.channels.length; i++) {
-          this.channels[i].enabled = true;
-        }
+      this.globalVar.setGlobalCategory('todos');
+      for (let i = 0; i < this.channels.length; i++) {
+        this.channels[i].enabled = true;
+      }
     } else {
       for (let i = 0; i < this.channels.length; i++) {
         if (this.channels[i].categoria === c) {
@@ -308,10 +277,8 @@ export class HomePage {
   // :::::::::::INICIACION PARA LOS SERVICIOS DE GOOGLE ADMOB::::::::::::
   async initialize() {
     const { status } = await AdMob.trackingAuthorizationStatus();
-    // console.log(status);
 
     if (status === 'notDetermined') {
-      // console.log('Display information before ads load first time');
     }
 
     AdMob.initialize({
@@ -319,31 +286,20 @@ export class HomePage {
       testingDevices: ['735978b4-219f-4d70-bade-7eb4b808ac5d'],
       initializeForTesting: false,
     });
-    
-    await AdMob.setApplicationMuted({muted: true});
+
+    AdMob.setApplicationMuted({ muted: true });
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
-    if (this.isMobile) {
-      this.initialize();
-      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+      // if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
         await this.showInterstitial();
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      } else {
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      }
-    }
+      //   this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      // } else {
+      //   this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      // }
   }
   // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
   async showInterstitial() {
-    AdMob.addListener(InterstitialAdPluginEvents.Loaded, () => {
-      // new VideoHls('', 'stop', this.isMobile, 'videoPreview');
-    });
-    AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => {
-      setTimeout(() => {
-        // new VideoHls('', 'resume', this.isMobile, 'videoPreview');
-      });
-    });
 
     const options: AdOptions = {
       adId: 'ca-app-pub-4427288659732696/1947824722',
@@ -358,7 +314,6 @@ export class HomePage {
 
   // :::::::: PARA FILTRAR LAS CATEGORIAS::::::::::
   handleChange(e: any) {
-    // console.log('ionChange fired with value: ' + e.detail.value);
     this.getCategory(e.detail.value);
     if (!this.isMobile) {
       this.openDesktoptMenu(false);
@@ -470,7 +425,7 @@ export class HomePage {
     }
   }
 
-  playDesktopChannel(id: string){
+  playDesktopChannel(id: string) {
 
     let deskChannel = [];
 
@@ -482,9 +437,9 @@ export class HomePage {
 
     new VideoHls(deskChannel.url, 'play', this.isMobile, 'videoDesktop');
 
-    setTimeout(()=>{
-    this.isDesktopFullScreen = true;
-    },3000);
+    setTimeout(() => {
+      this.isDesktopFullScreen = true;
+    }, 3000);
 
   }
 
@@ -517,22 +472,22 @@ export class HomePage {
     });
   }
 
-    // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
-    lockToPortrait() {
-      this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
-    }
-    lockToLandscape() {
-      this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
-    }
-    unlockScreenOrientation() {
-      this.so.unlock();
-    }
-    // :::::::FIN AL COMENTARIO ANTERIOR:::::::::::
-  
+  // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
+  lockToPortrait() {
+    this.so.lock(this.so.ORIENTATIONS.PORTRAIT);
+  }
+  lockToLandscape() {
+    this.so.lock(this.so.ORIENTATIONS.LANDSCAPE);
+  }
+  unlockScreenOrientation() {
+    this.so.unlock();
+  }
+  // :::::::FIN AL COMENTARIO ANTERIOR:::::::::::
+
   // ::::::::ESTO "LIMPIA EL CODIGO HTML GENERADO PROGRAMATICAMENTE PARA RENDERIZARLO EN EL DOCUMENTO":::::::::::::
-    getSanitizedHtml(html: string): SafeHtml {
-      return this.sanitizer.bypassSecurityTrustHtml(html);
-    }
+  getSanitizedHtml(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
 
   //::::::PARA QUE REBOTE LA PELOTA::::::
   bounceBaloon() {

@@ -13,9 +13,10 @@ export class ChannelsService {
 
     let apck: string = '69618bae51ea8f44f4d356f892889261';
     if(localStorage.getItem('xa88') == '1'){
-      apck = '888'
+      return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/chtestprem.json`, {responseType: 'json' });
+    }else{
+      return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/chtest.json`, {responseType: 'json' });
     }
-    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/${apck}.json`, {responseType: 'json' });
   }
 
   getParrilla(): Observable<any> {

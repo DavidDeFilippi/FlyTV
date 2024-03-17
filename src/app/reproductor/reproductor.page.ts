@@ -57,7 +57,7 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     this.channel.next = this.activatedRoute.snapshot.queryParamMap.get('next');
     this.channel.logo = this.activatedRoute.snapshot.queryParamMap.get('logo');
 
-    this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    // this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
 
   }
 
