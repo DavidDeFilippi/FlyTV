@@ -13,7 +13,9 @@ function VideoHls(videoSource, action, isMobile, playerID) {
     }
     video.play();
     if(playerID == "videoPreview"){
-      hls.levels[0];
+      hls.currentLevel = 0;
+      hls.nextLevel=0;
+      hls.loadLevel=0;
     };
   }
   else if (videoSource != '' && action == 'play') {

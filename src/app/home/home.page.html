@@ -24,9 +24,9 @@
       <br>
 
       <ion-item color="light" lines="none">
-        - Para continuar viendo el canal, presiona el boton que está a la derecha en la vista previa.
+        - Para ver el canal en el reproductor con todas sus funciones disponibles, presiona el boton "Ver en el Reproductor".
       </ion-item>
-
+      <br>
       <ion-item color="light" lines="none">
         <ion-img src="assets/instrucciones/instrucciones-continuarviendo.png"></ion-img>
       </ion-item>
@@ -43,7 +43,7 @@
         - En algunos canales, puedes ver la programacion presionando el boton <ion-icon name="calendar-outline"
           style="font-size: 35px; color: #fff; vertical-align: bottom;"></ion-icon>.
       </ion-item>
-
+      <br>
       <ion-item color="light" lines="lines">
         <ion-img src="assets/instrucciones/parrilla1.png"></ion-img>
       </ion-item>
@@ -82,11 +82,6 @@
         Actualizar canales (sirve en el caso de que no se vean algunos canales).
       </ion-item>
 
-      <!-- <ion-item color="light" lines="none">
-        <i class="fa-brands fa-chromecast" style="font-size: 21px; margin-right: 10px;"></i>
-        Abrir instrucciones para Chromecast.
-      </ion-item> -->
-
       <br>
 
       <ion-text style="font-style: italic; font-size: 15px;" (click)="bounceBaloon()">*En caso de experimentar problemas
@@ -107,7 +102,13 @@
             <ion-row>
               <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png"
                   style="width: 22px;margin-right: 10px;"></ion-col>
-              <ion-col class="ion-text-right" size="auto">
+              <ion-col class="ion-text-right" size="auto" id="logtrigger">
+
+                <div class="notifications" *ngIf="notificationRead == false" (click)="notificationRead = true;">
+                  1
+                </div>
+
+                <ion-icon name="notifications-outline" style="font-size: 23px;"></ion-icon>
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -141,14 +142,8 @@
       <ion-toolbar color="dark">
         <ion-grid class="previewGrid">
           <ion-row>
-            <ion-col size="7">
+            <ion-col size="6">
               <ion-grid>
-                <ion-row>
-                  <ion-col>
-                    <ion-progress-bar *ngIf="previewAutorized" color="danger" [value]="intervalChannelDuration"
-                      style="margin: 0px;padding: 0;position: absolute; bottom: 0;"></ion-progress-bar>
-                  </ion-col>
-                </ion-row>
                 <ion-row>
                   <ion-col style="border: 1px solid #fff;">
                     <video id="videoPreview" poster="../../assets/fondotv.png" autoplay controls>
@@ -157,28 +152,28 @@
                 </ion-row>
               </ion-grid>
             </ion-col>
-            <ion-col size="5">
-              <ion-grid>
-                <ion-row>
-                  <ion-col>
-                    <ion-label style="margin-top: 0px; font-size: 18px;" *ngIf="previewAutorized">
-                      <ion-label style="margin:0px; padding: 0px; font-weight: bold; font-size: 15px;" class="ion-text-left">
-                        <img class="channel-logo" style="vertical-align: middle;"
-                          [src]="ranChannel.logo">{{ranChannel.name}}</ion-label>
-                    </ion-label>
+            <ion-col size="6">
+              <ion-grid style="height: 100%;">
+                <ion-row style="height: 50%;">
+                  <ion-col size="10" style="margin-top: 0px; font-size: 15px; font-weight: bold;" *ngIf="previewAutorized">
+
+                    <div style="text-overflow: ellipsis;">
+                      <img class="channel-logo" style="vertical-align: middle; width: 18px;"
+                          [src]="ranChannel.logo">{{ranChannel.name.length > 20 ? ranChannel.name.slice(0,20)+' ...' : ranChannel.name}}
+                    </div>
+
                   </ion-col>
-                  <ion-col size="auto">
+                  <ion-col size="2">
                     <ion-icon *ngIf="previewAutorized" color="warning" expand="full" (click)="stopPreviewChannel()"
                       name="close-outline" style="font-size: 25px; font-weight: bolder;"></ion-icon>
                   </ion-col>
                 </ion-row>
-                <ion-row>
+                <ion-row style="height: 50%;">
                   <ion-col style="padding: 0px;">
-                    <ion-button *ngIf="previewAutorized" class="ion-button-comprimido"
-                      style="width: 100%;height: 100%;" color="medium" expand="full"
-                      [attr.id]="ranChannel.id" [routerLink]="['/reproductor']"
+                    <ion-button *ngIf="previewAutorized" class="ion-button-comprimido" style="font-size: 13px; width: 100%; height: 90%;"
+                      color="medium" [attr.id]="ranChannel.id" [routerLink]="['/reproductor']"
                       [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
-                      (click)="stopPreviewChannel()">Continuar Viendo</ion-button>
+                      (click)="stopPreviewChannel()">Ver en el<br>Reproductor</ion-button>
                   </ion-col>
                 </ion-row>
               </ion-grid>
@@ -202,7 +197,7 @@
 
           <ion-label *ngIf="channel.iframe" [attr.id]="channel.id" [routerLink]="['/iframe']"
             [queryParams]="{id: channel.id, current: channel.transmitiendo.current ? channel.transmitiendo.current : '', next: channel.transmitiendo.next ? channel.transmitiendo.next : ''}"
-            style="font-size: 15px; font-weight: bold; color: #e9e9e9;">{{channel.name}}
+            style="font-size: 15px; font-weight: bold; color: #e9e9e9;" (click)="stopPreviewChannel()">{{channel.name}}
           </ion-label>
 
           <ion-label *ngIf="!channel.iframe" [attr.id]="channel.id"
@@ -224,7 +219,7 @@
             style="font-size: 22px; color: #000; vertical-align: bottom;margin-right: 0px;margin-left: 5px;padding: 0px;"></ion-icon>
           <ion-icon name="globe-outline"
             style="font-size: 22px;margin-left: 10px;margin-right: 0px;padding: 0px; vertical-align: bottom; color: #fff"
-            *ngIf="channel.website !== ''" (click)="openWebSite(channel.website)"></ion-icon>
+            *ngIf="channel.website !== ''" (click)="stopPreviewChannel() ; openWebSite(channel.website)"></ion-icon>
           <ion-icon name="globe-outline"
             style="font-size: 22px;margin-left: 10px;margin-right: 0px;padding: 0px; vertical-align: bottom; color: #000"
             *ngIf="channel.website === ''"></ion-icon>
@@ -267,6 +262,16 @@
         </ion-item>
 
       </ion-list>
+
+      <!-- INICIO POPOVER -->
+      <!-- VERSION LOG -->
+      <ion-popover trigger="logtrigger" triggerAction="click">
+        <ng-template>
+          <ion-content class="ion-padding" [innerHTML]="logData.description" style="font-size: 14px;">
+
+          </ion-content>
+        </ng-template>
+      </ion-popover>
 
     </ion-content>
 

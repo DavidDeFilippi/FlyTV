@@ -11,9 +11,6 @@ import { AppLauncher } from '@capacitor/app-launcher';
 import { Device } from '@capacitor/device';
 import { CapacitorVideoPlayer } from 'capacitor-video-player';
 
-
-declare var VideoHls: any;
-
 @Component({
   selector: 'app-reproductor',
   templateUrl: './reproductor.page.html',
@@ -56,9 +53,6 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     this.channel.current = this.activatedRoute.snapshot.queryParamMap.get('current');
     this.channel.next = this.activatedRoute.snapshot.queryParamMap.get('next');
     this.channel.logo = this.activatedRoute.snapshot.queryParamMap.get('logo');
-
-    // this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-
   }
 
   async ngAfterViewInit() {

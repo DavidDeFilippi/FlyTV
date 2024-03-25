@@ -38,7 +38,6 @@ declare var VideoHls: any;
 export class HomePage {
 
   channels: any;
-  channelsBackUp: any = [];
   category: any
   categories: any;
   parrilla: any;
@@ -55,14 +54,13 @@ export class HomePage {
   aspck: number = 0;
   isMobile: any;
   DesktopMenuIsLocked: boolean = false;
-  ActuallyYear = new Date().getFullYear();
-  enableChannelPreview: boolean = false;
+  currentYear = new Date().getFullYear();
   ranChannel: any;
   previewAutorized: boolean = false;
-  intervalChannelDuration: any;
-  timeChannelPreview: any;
   isDesktopFullScreen: boolean = false;
-  contadorCanales: number = 0;
+  intervalTransmitiendo: any;
+  logData: any;
+  notificationRead: boolean = true;
 
   constructor(private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
@@ -75,8 +73,6 @@ export class HomePage {
   ) {}
 
   async ionViewWillEnter() {
-
-    this.enableChannelPreview = true;
 
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
@@ -99,6 +95,13 @@ export class HomePage {
     } else {
       await this.getTransmitiendo();
     }
+    setTimeout(()=>{
+      this.getNotificationContent();
+    }, 3000);
+  }
+
+  ionViewWillLeave(){
+    clearInterval(this.intervalTransmitiendo);
   }
 
   // :::::: CARGA TODOS LOS CANALES Y SUS COMPLEMENTOS::::::::::
@@ -138,14 +141,24 @@ export class HomePage {
     });
   }
 
-  // ::::::::::OBTIENE DESDE EL SEVIDOR LA PROGRAMACION DEL DIA PARA LOS CANALES QUE LOS TENGA DISPONIBLE:::::::::
+  // ::::::::::MUESTRA LO QUE ESTAN DANDO EN CADA CANAL:::::::::
   async getTransmitiendo() {
+    clearInterval(this.intervalTransmitiendo);
     for (let i = 0; i < this.channels.length; i++) {
       if (this.channels[i].parrilla) {
         this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.channels[i].parrilla);
         this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
       }
     }
+
+    this.intervalTransmitiendo = setInterval(()=>{
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].parrilla) {
+          this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.channels[i].parrilla);
+          this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
+        }
+      }
+    },30000);
   }
 
   // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
@@ -159,37 +172,12 @@ export class HomePage {
     }
     this.previewAutorized = true;
     new VideoHls(this.ranChannel.url, 'play', this.isMobile, 'videoPreview');
-    this.getRelojDuracionVistaPreviaCanales();
-  }
-
-  // :::::::::::::::::::::::DETERMINA CUANTO TIEMPO SE PROGRAMA A LA VISTA PREVIA::::::::::::::::::::
-  //EL VALOR MAXIMO DE CAGRA ES 1 PARA LLEGAR AL 100%.
-  // EL CALCULO SERIA 1 / (CANTIDAD DE SEGUNDOS QUE QUERAMOS QUE DURE LA VISTA PREVIA)
-  // EL DELAY O MILISEGUNDOS DEL setInterval(()=>{},milisegundos) PUEDE SER MENOR PARA DARLE MAS SUAVIDAD
-  // AL ion-progress-bar PERO SE DEBEN AJUSTAR LOS CALCULOS
-  getRelojDuracionVistaPreviaCanales() {
-    let onInterval = true;
-    clearInterval(this.timeChannelPreview);
-    this.intervalChannelDuration = 0;
-
-    this.timeChannelPreview = setInterval(() => {
-      if (this.intervalChannelDuration < 1) {
-        this.intervalChannelDuration += 0.033333333;
-      } else {
-        if (onInterval) {
-          onInterval = false;
-          new VideoHls('', 'pause', this.isMobile, 'videoPreview');
-        }
-      }
-    }, 1000);
   }
 
   // ::::::::::::PARA DETENER LA VISTA PREVIA Y  DEJAR LA VISTA GENERICA DE SELECCION DE UN CANAL:::::::::::::
   stopPreviewChannel() {
     new VideoHls('', 'stop', this.isMobile, 'videoPreview');
     this.previewAutorized = false;
-    clearInterval(this.timeChannelPreview);
-
   }
 
   // :::::::::::::DETERMINA QUE PROGRAMA SE ESTA TRANSMITIENDO EN UN CANAL::::::::::::::::
@@ -270,6 +258,25 @@ export class HomePage {
     }
   }
 
+  getNotificationContent(){
+    this.channelService.getVersionLog().subscribe((data) => {
+      this.logData = data[0];
+      this.logData.description = this.getSanitizedHtml('Version '+this.logData.version+'<br><br>'+this.logData.description);
+
+      if(localStorage.getItem('lognumber') == null){
+        localStorage.setItem('lognumber', this.logData.logiD);
+        this.notificationRead = false;
+      }else{
+        if(Number(localStorage.getItem('lognumber')) < this.logData.logiD){
+          localStorage.setItem('lognumber', this.logData.logiD);
+          this.notificationRead = false;
+        }
+      }
+
+
+    });
+  }
+
   // ::::::::::::::::::::::::::
   // :::::::::INICIO ADS:::::::
   // ::::::::::::::::::::::::::
@@ -291,12 +298,12 @@ export class HomePage {
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
-      // if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
         await this.showInterstitial();
-      //   this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      // } else {
-      //   this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      // }
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      } else {
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      }
   }
   // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
   async showInterstitial() {

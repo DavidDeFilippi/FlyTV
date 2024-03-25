@@ -26,37 +26,39 @@
   text-decoration: none;
 }
 
-a{
+a {
   text-decoration: none;
   text-align: center;
   color: #fff;
 }
-div a:hover > ion-item > ion-label{
+
+div a:hover>ion-item>ion-label {
   color: #98E4FF;
   font-size: 23px;
   white-space: nowrap;
 }
-ion-list{
+
+ion-list {
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
 
-.channel-logo{
+.channel-logo {
   width: 25px;
   margin-right: 5px;
 }
 
-.channel-logo-preview{
+.channel-logo-preview {
   width: 20px;
   margin-right: 5px;
 }
 
-.acordeon-logo{
+.acordeon-logo {
   width: 25px;
   margin-right: 5px;
 }
 
-ion-select{
+ion-select {
   max-height: 50% !important;
 }
 
@@ -64,11 +66,14 @@ ion-select{
   margin-top: 12px;
 }
 
-ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
+ion-label:focus-visible,
+a:focus-visible,
+ion-col:focus-visible {
   color: rgb(0 255 141) !important;
   outline: none;
 }
-#desktop-menu:focus-visible{
+
+#desktop-menu:focus-visible {
   outline: none;
 }
 
@@ -94,6 +99,7 @@ ion-label:focus-visible, a:focus-visible, ion-col:focus-visible{
   margin: 0px;
   padding: 0px;
 }
+
 video::-webkit-media-controls-panel,
 video::-webkit-media-controls-play-button,
 video::-webkit-media-controls-volume-slider-container,
@@ -108,8 +114,7 @@ video::-webkit-media-controls-seek-forward-button,
 video::-webkit-media-controls-fullscreen-button,
 video::-webkit-media-controls-rewind-button,
 video::-webkit-media-controls-return-to-realtime-button,
-video::-webkit-media-controls-toggle-closed-captions-button
-{
+video::-webkit-media-controls-toggle-closed-captions-button {
   display: none !important;
 }
 
@@ -118,13 +123,47 @@ video::-webkit-media-controls-toggle-closed-captions-button
   padding-left: 5px;
   margin: 0px;
 }
-.previewGrid{
+
+.previewGrid {
   --ion-grid-padding: 1.5px;
   --ion-grid-column-padding: 1.5px;
 }
-.ion-button-comprimido{
+
+.ion-button-comprimido {
   --padding-top: 0px;
   --padding-bottom: 0px;
   --padding-end: 0px;
   --padding-start: 0px;
+}
+
+.notifications {
+  font-size: 12px;
+  width: 17px;
+  background-color: #ff0230;
+  text-align: center;
+  border-radius: 15px;
+  padding-bottom: 2px;
+  left: 0px;
+  bottom: 0px;
+  position: absolute;
+  z-index: 50;
+}
+.prevChannelName{
+  --ion-padding-start: 0px !important;
+  --ion-padding-end: 0px !important;
+  margin: 0px !important;
+  // --background: #19422d;
+  // --color: #fff;
+  
+  // --border-color: #fff;
+  // --border-style: dashed;
+  // --border-width: 2px;
+
+  // --border-radius: 20px;
+
+  // --ripple-color: purple;
+
+  // --detail-icon-color: white;
+  // --detail-icon-opacity: 1;
+  // --detail-icon-font-size: 20px;
 }

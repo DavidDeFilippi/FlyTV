@@ -38,4 +38,8 @@ export class ChannelsService {
   getCanalesPrincipales(): Observable<any> {
     return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/idcanalesprincipales.json`, {responseType: 'json' });
   }
+
+  getVersionLog(): Observable<any> {
+    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/versionLog.json`, {responseType: 'json' });
+  }
 }
