@@ -21,6 +21,10 @@ const routes: Routes = [
     path: 'iframe',
     loadChildren: () => import('./iframe/iframe.module').then( m => m.IframePageModule)
   },
+  {
+    path: 'dplayer',
+    loadChildren: () => import('./dplayer/dplayer.module').then( m => m.DplayerPageModule)
+  },
 ];
 
 //Desktop

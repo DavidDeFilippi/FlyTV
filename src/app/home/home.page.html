@@ -188,7 +188,7 @@
 
       <ion-list *ngFor="let channel of channels">
         <ion-item color="dark" *ngIf="channel.enabled && channel.url.includes('https')">
-
+          {{channels[2].url}}
           <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : '#ff0230'}"
             [attr.name]="channel.estado ? 'checkmark-outline' : 'close-outline'"
             style="font-size: 21px; margin-right: 10px;"></ion-icon>

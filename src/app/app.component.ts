@@ -47,7 +47,7 @@ export class AppComponent {
 
   async presentExitAlert() {
     const alert = await this.alertController.create({
-      header: '¿Seguro que desea salir?',
+      header: '¿Seguro que deseas salir?',
       // subHeader: '¿Seguro que desea salir?',
       // message: '¿Seguro que desea salir?',
       buttons: this.alertButtons,

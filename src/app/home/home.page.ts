@@ -10,6 +10,7 @@ import { Platform } from '@ionic/angular';
 import { Share } from '@capacitor/share';
 import { MenuController } from '@ionic/angular';
 import { AppLauncher } from '@capacitor/app-launcher';
+import { Router } from '@angular/router';
 import { Optional } from '@angular/core';
 import { App } from '@capacitor/app';
 
@@ -62,45 +63,48 @@ export class HomePage {
   logData: any;
   notificationRead: boolean = true;
 
-  constructor(private channelService: ChannelsService,
+  constructor(
+    private channelService: ChannelsService,
     private loadingCtrl: LoadingController,
     private globalVar: GlobalVarService,
     private so: ScreenOrientation,
     private sanitizer: DomSanitizer,
     private alertController: AlertController,
     private platform: Platform,
-    private menuCtrl: MenuController
-  ) {}
+    private menuCtrl: MenuController,
+    private router: Router,
+  ) { }
+
+  ngOnInit() {
+    this.isMobile = this.globalVar.isMobile();
+
+    if (!this.isMobile) {
+      this.router.navigate(['/dplayer']);
+    }
+  }
 
   async ionViewWillEnter() {
-
-    new VideoHls('', 'stop', this.isMobile, 'videoPreview');
-    new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
-
-    // this.isMobile = this.globalVar.isMobile();
-    this.isMobile = true;
-
-    //AdMob
-    this.initialize();
-
     if (this.isMobile) {
+      //AdMob
+      this.initialize();
       this.lockToPortrait();
       this.platform.ready().then(() => {
         StatusBar.show();
       });
+
+      if (this.globalVar.getFirstLoadingChannels()) {
+        await this.getChannels();
+      } else {
+        await this.getTransmitiendo();
+      }
+      setTimeout(() => {
+        this.getNotificationContent();
+      }, 3000);
     }
 
-    if (this.globalVar.getFirstLoadingChannels()) {
-      await this.getChannels();
-    } else {
-      await this.getTransmitiendo();
-    }
-    setTimeout(()=>{
-      this.getNotificationContent();
-    }, 3000);
   }
 
-  ionViewWillLeave(){
+  ionViewWillLeave() {
     clearInterval(this.intervalTransmitiendo);
   }
 
@@ -115,7 +119,7 @@ export class HomePage {
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
-      if(this.globalVar.getFirstLoadingChannels()){
+      if (this.globalVar.getFirstLoadingChannels()) {
         this.getTransmitiendo();
         this.globalVar.setFirstLoadingChannels(false);
       }
@@ -151,14 +155,14 @@ export class HomePage {
       }
     }
 
-    this.intervalTransmitiendo = setInterval(()=>{
+    this.intervalTransmitiendo = setInterval(() => {
       for (let i = 0; i < this.channels.length; i++) {
         if (this.channels[i].parrilla) {
           this.channels[i].transmitiendo.current = this.getCurrentPrograma(this.channels[i].parrilla);
           this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
         }
       }
-    },30000);
+    }, 30000);
   }
 
   // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
@@ -249,25 +253,23 @@ export class HomePage {
       this.category = c;
     }
     this.globalVar.setGlobalCategory(c);
-    if (this.isMobile) {
-      this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
-      for (var x of this.categories) {
-        this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
-      }
-      this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
+    this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
+    for (var x of this.categories) {
+      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
     }
+    this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
   }
 
-  getNotificationContent(){
+  getNotificationContent() {
     this.channelService.getVersionLog().subscribe((data) => {
       this.logData = data[0];
-      this.logData.description = this.getSanitizedHtml('Version '+this.logData.version+'<br><br>'+this.logData.description);
+      this.logData.description = this.getSanitizedHtml('Version ' + this.logData.version + '<br><br>' + this.logData.description);
 
-      if(localStorage.getItem('lognumber') == null){
+      if (localStorage.getItem('lognumber') == null) {
         localStorage.setItem('lognumber', this.logData.logiD);
         this.notificationRead = false;
-      }else{
-        if(Number(localStorage.getItem('lognumber')) < this.logData.logiD){
+      } else {
+        if (Number(localStorage.getItem('lognumber')) < this.logData.logiD) {
           localStorage.setItem('lognumber', this.logData.logiD);
           this.notificationRead = false;
         }
@@ -298,12 +300,12 @@ export class HomePage {
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
-      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
-        await this.showInterstitial();
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      } else {
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      }
+    if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+      await this.showInterstitial();
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    } else {
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    }
   }
   // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
   async showInterstitial() {
@@ -322,9 +324,6 @@ export class HomePage {
   // :::::::: PARA FILTRAR LAS CATEGORIAS::::::::::
   handleChange(e: any) {
     this.getCategory(e.detail.value);
-    if (!this.isMobile) {
-      this.openDesktoptMenu(false);
-    }
   }
 
   //:::::::ABRE MODAL PARA VER LA PROGRAMACION DE UN CANAL:::::::::
@@ -414,7 +413,7 @@ export class HomePage {
   }
 
   //::::::FUNCIONES PARA VERSION ANDROID TV Y DESKTOP::::::
-  
+
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Backspace' || event.key === 'Escape') && !this.globalVar.getExitDialog() && this.isDesktopFullScreen) {

@@ -1,0 +1,10 @@
+  <ion-content id="channels">
+    <ion-list *ngFor="let channel of channels">
+      <ion-item *ngIf="channel.url.includes('https')" lines="full">
+          <img class="channel-logo" [src]="channel.logo" />
+        <ion-label (click)="playChannel(channel); setMenuActive()" [routerLink]="" >{{channel.name}}</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+  <div id="cont"></div>
+  <video id="videoDesktop" poster="../../assets/transparent.png" autoplay></video>

@@ -1,0 +1,49 @@
+ion-list {
+    background: rgba(0, 0, 0, 0);
+}
+
+ion-item {
+    --background: rgba(0, 0, 0, 0);
+}
+
+ion-label:focus-visible,
+a:focus-visible,
+ion-col:focus-visible {
+    color: rgb(0 255 141) !important;
+    outline: none;
+}
+
+#channels {
+    // position: fixed;
+    // z-index: 1;
+    width: 30%;
+    --background: rgba(0, 0, 0, 0.5);
+}
+
+.channel-logo {
+    width: 30px;
+    margin-right: 5px;
+}
+
+#videoDesktop {
+    width: 100%;
+    height: 100%;
+    background: no-repeat center/5% #000;
+    object-fit: cover;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -2;
+}
+#cont{
+    width: 5px;
+    height: 5px;
+    background: rgba(43, 41, 41, 0.5);
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: -1;
+    opacity: 0;
+}
