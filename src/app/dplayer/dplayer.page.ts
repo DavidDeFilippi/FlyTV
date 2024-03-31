@@ -64,7 +64,7 @@ export class DplayerPage implements OnInit {
     if (this.isMobile) {
       this.router.navigate(['/home']);
     } else {
-      clearInterval(this.setTimeoutMenu);
+      clearTimeout(this.setTimeoutMenu);
       this.getChannels();
     }
 
@@ -73,6 +73,7 @@ export class DplayerPage implements OnInit {
   getChannels() {
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
+      this.menuIsActive = true;
       this.getLastChannel();
       this.setMenuActive();
 
@@ -80,12 +81,14 @@ export class DplayerPage implements OnInit {
   }
 
   playChannel(ch: any) {
-    this.channeIinfo = ch;
-    clearInterval(this.setTimeoutMenu);
-    new setMenuActive(true);
-    new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
-    new VideoHls(ch.url, 'play', this.isMobile, 'videoDesktop');
-    localStorage.setItem('lastchannel', ch.id);
+    if (this.menuIsActive) {
+      this.channeIinfo = ch;
+      clearTimeout(this.setTimeoutMenu);
+      this.setMenuActive();
+      new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
+      new VideoHls(ch.url, 'play', this.isMobile, 'videoDesktop');
+      localStorage.setItem('lastchannel', ch.id);
+    }
   }
 
   getLastChannel() {
@@ -100,6 +103,7 @@ export class DplayerPage implements OnInit {
     for (let i = 0; i < this.channels.length; i++) {
       if (this.channels[i].id == id) {
         ch = this.channels[i];
+        this.channeIinfo = this.channels[i];
         break;
       }
     }
@@ -107,9 +111,9 @@ export class DplayerPage implements OnInit {
   }
 
   setMenuActive() {
-    clearInterval(this.setTimeoutMenu);
-    new setMenuActive(true);
+    clearTimeout(this.setTimeoutMenu);
     this.menuIsActive = true;
+    new setMenuActive(true);
     this.setTimeoutMenu = setTimeout(() => {
       new setMenuActive(false);
       this.menuIsActive = false;
@@ -119,24 +123,19 @@ export class DplayerPage implements OnInit {
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent) {
     if ((event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'Enter') && !this.globalVar.getExitDialog()) {
-      if (!this.menuIsActive && event.key === 'ArrowLeft') {
+      event.stopImmediatePropagation();
+      if (event.key === 'ArrowLeft') {
         this.setMenuActive();
-      } else {
-        if (this.menuIsActive) {
-          this.setMenuActive();
-        } else {
-          event.stopPropagation();
-        }
-
+      }else{
+        event.stopPropagation();
       }
+
     }
   }
 
   async presentExitAlert() {
     const alert = await this.alertController.create({
       header: '¿Seguro que deseas salir?',
-      // subHeader: '¿Seguro que desea salir?',
-      // message: '¿Seguro que desea salir?',
       buttons: this.alertButtons,
     });
 

@@ -1,10 +1,16 @@
-  <ion-content id="channels">
+  <ion-content id="channels" [scrollY]="menuIsActive ">
     <ion-list *ngFor="let channel of channels">
-      <ion-item *ngIf="channel.url.includes('https')" lines="full">
+        <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full" (mouseenter)="setMenuActive()">
           <img class="channel-logo" [src]="channel.logo" />
-        <ion-label (click)="playChannel(channel); setMenuActive()" [routerLink]="" >{{channel.name}}</ion-label>
+        <ion-label (click)="playChannel(channel)" [routerLink]="" >{{channel.name}}</ion-label>
       </ion-item>
     </ion-list>
+    <div id="channelInfo">
+      <ion-item lines="none" *ngIf="channeIinfo">
+        <img class="channel-logo" [src]="channeIinfo.logo" />
+      <ion-label>{{channeIinfo.name}}</ion-label>
+    </ion-item>
+    </div>
   </ion-content>
   <div id="cont"></div>
   <video id="videoDesktop" poster="../../assets/transparent.png" autoplay></video>

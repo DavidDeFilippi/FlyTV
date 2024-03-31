@@ -83,7 +83,6 @@ function getListeners(isMobile, playerID) {
 
     document.getElementById(playerID).style.backgroundImage = "none";
     setTimeout(()=>{
-      setMenuActive(false);
       document.getElementById("cont").style.opacity = "0.5";
       setTimeout(()=>{
         document.getElementById("cont").style.opacity = "0";
