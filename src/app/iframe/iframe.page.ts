@@ -14,7 +14,11 @@ export class IframePage implements OnInit {
   channel: any;
   channels: any;
   iframe: any;
-  constructor(private channelService: ChannelsService,private activatedRoute: ActivatedRoute,private sanitizer: DomSanitizer, private so: ScreenOrientation) { }
+  constructor(
+    private channelService: ChannelsService,
+    private activatedRoute: ActivatedRoute,
+    private sanitizer: DomSanitizer, 
+    private so: ScreenOrientation) { }
 
   ngOnInit() {
     this.unlockScreenOrientation();

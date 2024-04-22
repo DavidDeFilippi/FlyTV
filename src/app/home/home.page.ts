@@ -79,6 +79,7 @@ export class HomePage {
     this.isMobile = this.globalVar.isMobile();
 
     if (!this.isMobile) {
+      localStorage.setItem('xa88', '1');
       this.router.navigate(['/dplayer']);
     }
   }

@@ -4,6 +4,7 @@ import { GlobalVarService } from '../global-var.service';
 import { ChannelsService } from '../channels.service';
 import { App } from '@capacitor/app';
 import { IonRouterOutlet, Platform, AlertController } from '@ionic/angular';
+import { AppLauncher } from '@capacitor/app-launcher';
 
 declare var VideoHls: any;
 declare var setMenuActive: any;
@@ -47,7 +48,7 @@ export class DplayerPage implements OnInit {
     private platform: Platform,
 
   ) {
-    this.platform.backButton.subscribeWithPriority(10, () => {
+    this.platform.backButton.subscribeWithPriority(9, () => {
       if (!this.outlet?.canGoBack()) {
         // App.exitApp();
         if (!this.globalVar.isMobile()) {
@@ -126,7 +127,7 @@ export class DplayerPage implements OnInit {
       event.stopImmediatePropagation();
       if (event.key === 'ArrowLeft') {
         this.setMenuActive();
-      }else{
+      } else {
         event.stopPropagation();
       }
 
@@ -144,6 +145,16 @@ export class DplayerPage implements OnInit {
     alert.onDidDismiss().then((data) => {
       this.globalVar.setExitDialog(false);
     });
+  }
+
+  //::::::::PARA COMPARTIR CON APPS DE VIDEO EXTERNAS (SIRVE OPCIONALMENTE PARA URL DE VIDEOS HTTP):::::::::
+  async openChannelUrl(url: string) {
+    if (this.menuIsActive) {
+      const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
+      if (canopen.value) {
+        window.open('vlc://' + url, "_blank");
+      }
+    }
   }
 
 }
