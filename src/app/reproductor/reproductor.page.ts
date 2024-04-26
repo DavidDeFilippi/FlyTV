@@ -23,6 +23,7 @@ export class ReproductorPage implements OnInit, AfterViewInit {
   channels: any;
   channel: any = {id: '',name: '', url: '', current: '', next: '', logo: ''};
   isMobile: any;
+  playerOptions: any = {};
   
   private platform: string = 'web';
   private videoPlayer: any;
@@ -56,6 +57,9 @@ export class ReproductorPage implements OnInit, AfterViewInit {
   }
 
   async ngAfterViewInit() {
+    console.log('this.globalVar.getPlayerPip()');
+    console.log(this.globalVar.getPlayerPip());
+    
     const info = await Device.getInfo();
     this.platform = info.platform;
     this.videoPlayer = CapacitorVideoPlayer;
@@ -69,6 +73,8 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     props.title = this.channel.name;
     props.smallTitle = this.channel.current+'\n'+this.channel.next;
     props.artwork = this.channel.logo;
+    props.pipEnabled = this.globalVar.getPlayerPip();
+    props.bkmodeEnabled = this.globalVar.getPlayerBgAudio();
     const res: any = await this.videoPlayer.initPlayer(props);
   }
 

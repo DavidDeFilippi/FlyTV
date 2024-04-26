@@ -5,10 +5,22 @@
   <ion-menu contentId="main-content">
     <ion-header>
       <ion-toolbar color="dark">
-        <ion-title>Ayuda e Instrucciones</ion-title>
+        <ion-title>Configuración y Ayuda</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding" color="light" style="font-size: 16px;">
+
+      <ion-item color="light" lines="none" style="font-size: 20px;">
+        Opciones del Reproductor
+      </ion-item>
+      
+      <ion-item color="light" lines="none">
+        <ion-toggle [checked]="playerOptions.pip" (ionChange)="playerOptionsChange($event, 'pip')">Reproductor flotante</ion-toggle>
+      </ion-item>
+
+      <ion-item color="light" lines="none">
+        <ion-toggle [checked]="playerOptions.bgroundAudio" (ionChange)="playerOptionsChange($event, 'bgroundAudio')">Audio en segundo plano</ion-toggle>
+      </ion-item>
 
       <ion-item color="light" lines="none" style="font-size: 20px;">
         Como utilizar la App
@@ -95,27 +107,27 @@
     <ion-header>
       <ion-toolbar color="dark">
         <ion-buttons slot="start">
-          <ion-menu-button><ion-icon name="help-circle-outline" style="font-size: 27px;"></ion-icon></ion-menu-button>
+          <ion-menu-button><ion-icon name="help-circle-outline" style="font-size: 35px;"></ion-icon></ion-menu-button>
         </ion-buttons>
         <ion-title class="ion-text-center" size="large" style="padding: 0;">
           <ion-grid style="padding: 0;">
             <ion-row>
-              <ion-col class="ion-text-center">Fly TV<img src="assets/icon/logo-icon.png"
-                  style="width: 22px;margin-right: 10px;"></ion-col>
+              <ion-col class="ion-text-center" style="font-size: 25px;">Fly TV<img src="assets/icon/logo-icon.png"
+                  style="width: 30px;margin-right: 25px; margin-left: 5px;"></ion-col>
               <ion-col class="ion-text-right" size="auto" id="logtrigger">
 
                 <div class="notifications" *ngIf="notificationRead == false" (click)="notificationRead = true;">
                   1
                 </div>
 
-                <ion-icon name="notifications-outline" style="font-size: 23px;"></ion-icon>
+                <ion-icon name="notifications-outline" style="font-size: 30px;"></ion-icon>
               </ion-col>
             </ion-row>
           </ion-grid>
         </ion-title>
 
       </ion-toolbar>
-      <ion-item color="dark" (click)="openShareAppModal(true)">
+      <ion-item color="dark" (click)="openShareAppModal(true)" style="font-size: 102%;">
         <ion-icon name="share-social-outline" style="font-size: 27px; margin-right: 10px;"></ion-icon>
         <ion-text>Comparte la apicacion presionando aqui!</ion-text>
       </ion-item>
@@ -126,8 +138,8 @@
             <ion-row style="padding: 0;">
               <ion-col size="11" style="padding: 0;">
                 <ion-select class="ion-text-capitalize" color="light" style="width: 80%; padding: 0;" aria-label="Fruit"
-                  interface="popover" placeholder="Selecciona una categoria" [innerHTML]="htmlSelectOption"
-                  (ionChange)="handleChange($event)">
+                  interface="popover" placeholder="Selecciona una categoria" [(ngModel)]="category" (ionChange)="handleChange($event)">
+                  <ion-select-option *ngFor="let cat of categories" [value]="cat" class="ion-text-capitalize">{{ cat }}</ion-select-option>
                 </ion-select>
               </ion-col>
               <ion-col class="ion-text-right" class="vertical-center" style="font-size: 21px; padding: 0;" size="1"

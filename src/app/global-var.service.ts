@@ -12,6 +12,8 @@ export class GlobalVarService {
   private numberForAds: number = 1;
   private firstLoadingChannels: boolean = true;
   private isExitDialog: boolean = false;
+  private playerPip: boolean = false;
+  private playerBgAudio: boolean = false;
 
   public getGlobalCategory() {
     return this.globalCategory;
@@ -43,6 +45,22 @@ export class GlobalVarService {
 
   public setExitDialog(isExitDialog: boolean) {
     this.isExitDialog = isExitDialog;
+  }
+
+  public getPlayerPip() {
+    return this.playerPip;
+  }
+
+  public setPlayerpip(playerPip: boolean) {
+    this.playerPip = playerPip;
+  }
+  
+  public getPlayerBgAudio() {
+    return this.playerBgAudio;
+  }
+
+  public setplayerBgAudio(playerBgAudio: boolean) {
+    this.playerBgAudio = playerBgAudio;
   }
 
   public isMobile(){

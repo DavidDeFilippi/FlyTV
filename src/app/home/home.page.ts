@@ -62,6 +62,7 @@ export class HomePage {
   intervalTransmitiendo: any;
   logData: any;
   notificationRead: boolean = true;
+  playerOptions: any = {};
 
   constructor(
     private channelService: ChannelsService,
@@ -99,8 +100,8 @@ export class HomePage {
         await this.getTransmitiendo();
       }
       setTimeout(() => {
-        this.getNotificationContent();
-      }, 3000);
+        this.getLocalStorage();
+      }, 1000);
     }
 
   }
@@ -238,12 +239,13 @@ export class HomePage {
 
   // :::::::::::::::MUESTRA LOS CANALES DE LA CATEGORIA SELECCIONADA::::::::::
   async getCategory(c: string) {
-    if (c === 'todos' || c === '' || c === undefined) {
-      this.globalVar.setGlobalCategory('todos');
-      for (let i = 0; i < this.channels.length; i++) {
-        this.channels[i].enabled = true;
-      }
-    } else {
+    c = c == '' ? 'nacionales' : c;
+    // if (c === 'todos' || c === '' || c === undefined) {
+    //   this.globalVar.setGlobalCategory('todos');
+    //   for (let i = 0; i < this.channels.length; i++) {
+    //     this.channels[i].enabled = true;
+    //   }
+    // } else {
       for (let i = 0; i < this.channels.length; i++) {
         if (this.channels[i].categoria === c) {
           this.channels[i].enabled = true;
@@ -252,16 +254,16 @@ export class HomePage {
         }
       }
       this.category = c;
-    }
+    // }
     this.globalVar.setGlobalCategory(c);
-    this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
-    for (var x of this.categories) {
-      this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
-    }
-    this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
+    // this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
+    // for (var x of this.categories) {
+    //   this.htmlSelectOption = this.htmlSelectOption + `<ion-select-option color="light" value="${x}" class="ion-text-capitalize">${x}</ion-select-option>`;
+    // }
+    // this.htmlSelectOption = this.getSanitizedHtml(this.htmlSelectOption);
   }
 
-  getNotificationContent() {
+  getLocalStorage() {
     this.channelService.getVersionLog().subscribe((data) => {
       this.logData = data[0];
       this.logData.description = this.getSanitizedHtml('Version ' + this.logData.version + '<br><br>' + this.logData.description);
@@ -275,9 +277,21 @@ export class HomePage {
           this.notificationRead = false;
         }
       }
-
-
     });
+
+    if(localStorage.getItem('pip') == null){
+      localStorage.setItem('pip', '1');
+    }
+
+    if(localStorage.getItem('bgroundAudio') == null){
+      localStorage.setItem('bgroundAudio', '0');
+    }
+
+    this.playerOptions.pip = localStorage.getItem('pip') == '1' ? true : false;
+    this.playerOptions.bgroundAudio = localStorage.getItem('bgroundAudio') == '1' ? true : false;
+
+    this.globalVar.setPlayerpip(this.playerOptions.pip);
+    this.globalVar.setplayerBgAudio(this.playerOptions.bgroundAudio);
   }
 
   // ::::::::::::::::::::::::::
@@ -326,6 +340,24 @@ export class HomePage {
   handleChange(e: any) {
     this.getCategory(e.detail.value);
   }
+
+  // :::::::: Para las opciones del reproductor::::::::::
+  playerOptionsChange(e: any, a: string) {
+    console.log(e.detail.checked);
+    console.log(a);
+    
+    switch (a) {
+      case 'pip':
+        this.playerOptions.pip = localStorage.setItem('pip', e.detail.checked == true ? '1' : '0');
+        this.globalVar.setPlayerpip(e.detail.checked);
+        break;
+      case 'bgroundAudio':
+        this.playerOptions.pip = localStorage.setItem('bgroundAudio', e.detail.checked == true ? '1' : '0');
+        this.globalVar.setplayerBgAudio(e.detail.checked);
+        break;
+    }
+  }
+
 
   //:::::::ABRE MODAL PARA VER LA PROGRAMACION DE UN CANAL:::::::::
   setOpen(isOpen: boolean, ch?: any) {
