@@ -148,22 +148,33 @@ video::-webkit-media-controls-toggle-closed-captions-button {
   position: absolute;
   z-index: 50;
 }
-.prevChannelName{
+
+.prevChannelName {
   --ion-padding-start: 0px !important;
   --ion-padding-end: 0px !important;
   margin: 0px !important;
-  // --background: #19422d;
-  // --color: #fff;
-  
-  // --border-color: #fff;
-  // --border-style: dashed;
-  // --border-width: 2px;
+}
 
-  // --border-radius: 20px;
+ion-select {
+  background-color: #004966;
+  text-transform: capitalize;
+  padding: 0px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 5px;
+  margin-left: 0px;
+  font-size: 15px;
+  border-radius: 10px;
 
-  // --ripple-color: purple;
+}
 
-  // --detail-icon-color: white;
-  // --detail-icon-opacity: 1;
-  // --detail-icon-font-size: 20px;
+.select-custom::part(label) {
+  // background-color: #545ca7;
+  padding: 0px;
+  margin: 0px;
+}
+.select-custom::part(text) {
+  // background-color: #545ca7;
+  padding: 0px;
+  margin: 0px;
 }
