@@ -34,6 +34,10 @@ export class DplayerPage implements OnInit {
 
   isMobile: boolean = false;
   channels: any;
+  premium: any;
+  nacionales: any;
+  entretencion: any;
+  noticias: any;
   setTimeoutMenu: any;
   clickPlay: boolean = false;
   menuIsActive: boolean = false;
@@ -74,6 +78,15 @@ export class DplayerPage implements OnInit {
   getChannels() {
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
+      this.nacionales = this.channels.filter(function(c: any){
+        return c.categoria === 'nacionales';
+      });
+      this.premium = this.channels.filter(function(c: any){
+        return c.categoria === 'premium';
+      });
+      this.noticias = this.channels.filter(function(c: any){
+        return c.categoria === 'noticias';
+      });
       this.menuIsActive = true;
       this.getLastChannel();
       this.setMenuActive();

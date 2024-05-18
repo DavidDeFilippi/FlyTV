@@ -76,6 +76,7 @@ export class ReproductorPage implements OnInit, AfterViewInit {
     props.pipEnabled = this.globalVar.getPlayerPip();
     props.bkmodeEnabled = this.globalVar.getPlayerBgAudio();
     const res: any = await this.videoPlayer.initPlayer(props);
+    localStorage.setItem('played', '1');
   }
 
   async ngOnDestroy(): Promise<void> {

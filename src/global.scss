@@ -26,24 +26,28 @@
 @import "@ionic/angular/css/flex-utils.css";
 
 ion-toast.custom-toast {
-    --background: #f4f4fa;
-    --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
-    --color: #4b4a50;
-  }
-  
-  ion-toast.custom-toast::part(message){
-    // font-style: italic;
-    font-size: 14px;
-  }
+  --background: #f4f4fa;
+  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+  --color: #4b4a50;
+}
 
-  ion-toast.custom-toast::part(header) {
-    // font-style: italic;
-    font-size: 16px;
-    color:aquamarine;
-  }
-  
-  ion-toast.custom-toast::part(button) {
-    border-left: 1px solid #d2d2d2;
-    color: #030207;
-    font-size: 15px;
-  }
+ion-toast.custom-toast::part(message) {
+  // font-style: italic;
+  font-size: 14px;
+}
+
+ion-toast.custom-toast::part(header) {
+  // font-style: italic;
+  font-size: 16px;
+  color: aquamarine;
+}
+
+ion-toast.custom-toast::part(button) {
+  border-left: 1px solid #d2d2d2;
+  color: #030207;
+  font-size: 15px;
+}
+
+.alert-message {
+  color: #fff !important;
+}

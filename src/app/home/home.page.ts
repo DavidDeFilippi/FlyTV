@@ -38,7 +38,27 @@ declare var VideoHls: any;
 })
 export class HomePage {
 
+  public alertButtons = [
+    {
+      text: 'Quiero Donar',
+      role: 'confirm',
+      handler: () => {
+        localStorage.setItem('dismisseddonation','1');
+        this.openWebSite('https://link.mercadopago.cl/sorbeteapps');
+      },
+    },
+    {
+      text: 'Cerrar',
+      role: 'cancel',
+      handler: () => {
+        // App.exitApp();
+        localStorage.setItem('dismisseddonation','1');
+      },
+    },
+  ];
+
   channels: any;
+  appSettings: any;
   category: any
   categories: any;
   parrilla: any;
@@ -63,6 +83,7 @@ export class HomePage {
   logData: any;
   notificationRead: boolean = true;
   playerOptions: any = {};
+  deviceInfo: string = this.platform.platforms().toString();
 
   constructor(
     private channelService: ChannelsService,
@@ -87,6 +108,7 @@ export class HomePage {
 
   async ionViewWillEnter() {
     if (this.isMobile) {
+      this.getAppSettings();
       //AdMob
       this.initialize();
       this.lockToPortrait();
@@ -101,9 +123,13 @@ export class HomePage {
       }
       setTimeout(() => {
         this.getLocalStorage();
+        if (localStorage.getItem('played') == '1') {
+          if(localStorage.getItem('dismisseddonation') == null){
+            this.presentDonationAlert();
+          }
+        }
       }, 1000);
     }
-
   }
 
   ionViewWillLeave() {
@@ -144,6 +170,13 @@ export class HomePage {
       this.getTransmitiendo();
       loading.dismiss();
       this.globalVar.setFirstLoadingChannels(false);
+    });
+  }
+
+  //:::::::CONFIGURACIONES DE LA APP QUE VIENEN DESE LA API::::::::
+  async getAppSettings() {
+    this.channelService.getAppSettings().subscribe((data) => {
+      this.appSettings = data;
     });
   }
 
@@ -246,14 +279,14 @@ export class HomePage {
     //     this.channels[i].enabled = true;
     //   }
     // } else {
-      for (let i = 0; i < this.channels.length; i++) {
-        if (this.channels[i].categoria === c) {
-          this.channels[i].enabled = true;
-        } else {
-          this.channels[i].enabled = false;
-        }
+    for (let i = 0; i < this.channels.length; i++) {
+      if (this.channels[i].categoria === c) {
+        this.channels[i].enabled = true;
+      } else {
+        this.channels[i].enabled = false;
       }
-      this.category = c;
+    }
+    this.category = c;
     // }
     this.globalVar.setGlobalCategory(c);
     // this.htmlSelectOption = `<ion-select-option color="light" value="todos" class="ion-text-capitalize">Todos</ion-select-option>`;
@@ -279,11 +312,11 @@ export class HomePage {
       }
     });
 
-    if(localStorage.getItem('pip') == null){
+    if (localStorage.getItem('pip') == null) {
       localStorage.setItem('pip', '1');
     }
 
-    if(localStorage.getItem('bgroundAudio') == null){
+    if (localStorage.getItem('bgroundAudio') == null) {
       localStorage.setItem('bgroundAudio', '0');
     }
 
@@ -292,6 +325,7 @@ export class HomePage {
 
     this.globalVar.setPlayerpip(this.playerOptions.pip);
     this.globalVar.setplayerBgAudio(this.playerOptions.bgroundAudio);
+
   }
 
   // ::::::::::::::::::::::::::
@@ -315,11 +349,13 @@ export class HomePage {
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
-    if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
-      await this.showInterstitial();
-      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-    } else {
-      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    if(this.appSettings.ads){
+      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+        await this.showInterstitial();
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      } else {
+        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+      }
     }
   }
   // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
@@ -343,9 +379,6 @@ export class HomePage {
 
   // :::::::: Para las opciones del reproductor::::::::::
   playerOptionsChange(e: any, a: string) {
-    console.log(e.detail.checked);
-    console.log(a);
-    
     switch (a) {
       case 'pip':
         this.playerOptions.pip = localStorage.setItem('pip', e.detail.checked == true ? '1' : '0');
@@ -511,6 +544,23 @@ export class HomePage {
     });
   }
 
+  //:::::::::::::::ALERTA EMERGENTE PARA DONACIONES::::::::::::
+  async presentDonationAlert() {
+      const alert = await this.alertController.create({
+        header: 'Ayudanos con una donación',
+        subHeader: 'Sorbete Apps necesita tu ayuda.',
+        message: '¡Hola! Ayudanos a impulsar nuestro proyecto. Cualquier donación nos sería de ayuda para mantenernos atentos a esta aplicación.</br>El botón te llevará a mercado pago donde puedes ingresar un monto desde $1CLP.</br></br><img src="assets/mercadopago.jpg" />',
+        buttons: this.alertButtons,
+        cssClass: 'donation-alert',
+        backdropDismiss: false,
+      });
+
+      await alert.present();
+
+      alert.onDidDismiss().then((data) => {
+        // this.globalVar.setExitDialog(false);
+      });
+  }
   // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
   lockToPortrait() {
     this.so.lock(this.so.ORIENTATIONS.PORTRAIT);

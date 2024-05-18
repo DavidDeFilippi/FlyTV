@@ -11,6 +11,13 @@
     <ion-content class="ion-padding" color="light" style="font-size: 16px;">
 
       <ion-item color="light" lines="none" style="font-size: 20px;">
+        Ayuda al proyecto
+      </ion-item>
+      <!-- <ion-item color="light" lines="none" style="font-size: 20px;">
+        
+      </ion-item> -->
+      <ion-button color="dark" (click)="presentDonationAlert()">¿Cómo puedo ayudar?</ion-button>
+      <ion-item color="light" lines="none" style="font-size: 20px;">
         Opciones del Reproductor
       </ion-item>
 
@@ -123,27 +130,23 @@
     <ion-header>
       <ion-toolbar color="dark">
         <ion-buttons slot="start">
-          <ion-menu-button style="font-size: 35px;"></ion-menu-button>
+          <ion-menu-button></ion-menu-button>
         </ion-buttons>
-        <ion-title class="ion-text-center" size="large" style="padding: 0;">
-          <ion-grid style="padding: 0;">
-            <ion-row>
-              <ion-col class="ion-text-center" style="font-size: 25px;">Fly TV<img src="assets/icon/logo-icon.png"
-                  style="width: 30px;margin-right: 25px; margin-left: 5px;"></ion-col>
-              <ion-col class="ion-text-right" size="auto" id="logtrigger">
-
-                <div class="notifications" *ngIf="notificationRead == false" (click)="notificationRead = true;">
-                  1
-                </div>
-
-                <ion-icon name="notifications-outline" style="font-size: 30px;"></ion-icon>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+        <ion-title class="ion-text-center">
+          
+          Fly TV<img src="assets/icon/logo-icon.png"
+          style="width: 26px; padding-left: 5px;">
         </ion-title>
+        <ion-buttons slot="end">
 
+          <ion-button id="logtrigger" (click)="notificationRead = true;">
+            <div class="notifications" *ngIf="notificationRead == false" (click)="notificationRead = true;">
+            </div>
+            <ion-icon name="notifications-outline" style="font-size: 200%;"></ion-icon>
+          </ion-button>
+
+        </ion-buttons>
       </ion-toolbar>
-
       <ion-item color="light" style="font-size: 12px">
         <ion-grid>
           <ion-row>
@@ -171,53 +174,50 @@
                     }}</ion-select-option>
                 </ion-select>
               </ion-col>
-              <!-- <ion-col class="ion-text-right" class="vertical-center" style="font-size: 21px; padding-left: 5px;" size="1"
-                (click)="updateChannels()">
-                <i class="fa-solid fa-rotate-right"></i>
-              </ion-col> -->
             </ion-row>
           </ion-grid>
         </ion-item>
       </ion-list>
-
       <ion-toolbar color="dark">
-        <ion-grid class="previewGrid">
+        <ion-grid>
           <ion-row>
-            <ion-col size="6">
-              <ion-grid>
-                <ion-row>
-                  <ion-col style="border: 1px solid #fff;">
-                    <video id="videoPreview" poster="../../assets/fondotv.png" autoplay controls>
-                    </video>
+            <ion-col size="6" style="height: 100%; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+              <ion-grid style="height: 100%; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+                <ion-row style="height: 100%; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+                  <ion-col style="height: 100%; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+                      <video id="videoPreview" poster="../../assets/transparent.png" autoplay>
+                      </video>
                   </ion-col>
                 </ion-row>
               </ion-grid>
             </ion-col>
-            <ion-col size="6">
-              <ion-grid style="height: 100%;">
-                <ion-row style="height: 50%;">
-                  <ion-col size="10" style="margin-top: 0px; font-size: 15px; font-weight: bold;"
+            <ion-col size="6" style="padding-top: 0;">
+              <ion-grid style="height: 100%; padding-top: 0;">
+                <ion-row style="height: 50%; padding-top: 0;">
+                  <ion-col size="10" style="font-size: 15px; font-weight: bold; padding-top: 0;"
                     *ngIf="previewAutorized">
 
                     <div style="text-overflow: ellipsis;">
                       <img class="channel-logo" style="vertical-align: middle; width: 18px;"
-                        [src]="ranChannel.logo">{{ranChannel.name.length > 20 ? ranChannel.name.slice(0,20)+' ...' :
-                      ranChannel.name}}
+                        [src]="ranChannel.logo"> <ion-label class="preview-channel-title" [ngClass]="[deviceInfo.includes('tablet') ? 'preview-channel-title-tablet' : 'preview-channel-title']" >{{ranChannel.name.length > 20 ? ranChannel.name.slice(0,20)+' ...' :
+                          ranChannel.name}}</ion-label>
                     </div>
 
                   </ion-col>
-                  <ion-col size="2">
-                    <ion-icon *ngIf="previewAutorized" color="warning" expand="full" (click)="stopPreviewChannel()"
+                  <ion-col size="2" style="padding-top: 0;">
+                    <ion-icon *ngIf="previewAutorized" expand="full" (click)="stopPreviewChannel()"
                       name="close-outline" style="font-size: 25px; font-weight: bolder;"></ion-icon>
                   </ion-col>
                 </ion-row>
                 <ion-row style="height: 50%;">
-                  <ion-col style="padding: 0px;">
-                    <ion-button *ngIf="previewAutorized" class="ion-button-comprimido"
-                      style="font-size: 13px; width: 100%; height: 90%;" color="medium" [attr.id]="ranChannel.id"
+                  <ion-col>
+                    <div class="btn-reproducir-container">
+                      <ion-button [ngClass]="[deviceInfo.includes('tablet') ? 'btn-reproducir-tablet' : 'btn-reproducir']" *ngIf="previewAutorized"
+                       [attr.id]="ranChannel.id"
                       [routerLink]="['/reproductor']"
                       [queryParams]="{id: ranChannel.id ,current: ranChannel.transmitiendo.current ? ranChannel.transmitiendo.current: '', name: ranChannel.name ? ranChannel.name: '', next: ranChannel.transmitiendo.next ? ranChannel.transmitiendo.next : '', url: ranChannel.url ? ranChannel.url : '', logo: ranChannel.logo ? ranChannel.logo : '',}"
                       (click)="stopPreviewChannel()">Ver en el<br>Reproductor</ion-button>
+                    </div>
                   </ion-col>
                 </ion-row>
               </ion-grid>

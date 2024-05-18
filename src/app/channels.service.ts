@@ -42,4 +42,8 @@ export class ChannelsService {
   getVersionLog(): Observable<any> {
     return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/versionLog.json`, {responseType: 'json' });
   }
+  
+  getAppSettings(): Observable<any> {
+    return this.http.get(`https://raw.githubusercontent.com/DavidDeFilippi/channels/master/app-settings.json`, {responseType: 'json' });
+  }
 }
