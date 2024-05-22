@@ -1,21 +1,47 @@
-  <ion-content id="channels" [scrollY]="menuIsActive ">
-    <ion-list *ngFor="let channel of channels">
-        <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full" (mouseenter)="setMenuActive()">
-          <img class="channel-logo" [src]="channel.logo" />
-        <ion-label (click)="playChannel(channel)" [routerLink]="" >{{channel.name}}</ion-label>
-      </ion-item>
+<ion-content id="channels" [scrollY]="isMenuLeft" *ngIf="isMenuLeft">
+  <ion-list *ngFor="let channel of channels">
+    <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full">
+      <img class="channel-logo" [src]="channel.logo" />
+      <ion-label (click)="playChannel(channel)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
 
-        <ion-item *ngIf="channel.url.includes('http://') && !channel.url.iframe" lines="full" (mouseenter)="setMenuActive()">
-          <img class="channel-logo" [src]="channel.logo" />
-        <ion-label (click)="openChannelUrl(channel.url)" [routerLink]="" >{{channel.name}}</ion-label>
-      </ion-item>
-    </ion-list>
-    <div id="channelInfo">
-      <ion-item lines="none" *ngIf="channeIinfo">
-        <img class="channel-logo" [src]="channeIinfo.logo" />
+        <ion-label style="font-size: 14px; font-weight: 400; color: #fff;"
+          *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline"
+            style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+        <ion-label style="font-size: 14px; font-weight: 400; color: #fff;"
+          *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
+
+      </ion-label>
+
+    </ion-item>
+
+    <ion-item *ngIf="channel.url.includes('http://') && !channel.url.iframe" lines="full">
+      <img class="channel-logo" [src]="channel.logo" />
+      <ion-label (click)="openChannelUrl(channel.url)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
+
+        <ion-label style="font-size: 14px; font-weight: 400; color: #fff;"
+          *ngIf="channel.transmitiendo.current !== ''"><ion-icon name="chevron-forward-outline"
+            style="color: #fff;"></ion-icon>{{channel.transmitiendo.current}}</ion-label>
+        <ion-label style="font-size: 14px; font-weight: 400; color: #fff;"
+          *ngIf="channel.transmitiendo.next !== ''">{{channel.transmitiendo.next}}</ion-label>
+
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <div id="channelInfo">
+    <ion-item lines="none" *ngIf="channeIinfo">
+      <img class="channel-logo" [src]="channeIinfo.logo" />
       <ion-label>{{channeIinfo.name}}</ion-label>
     </ion-item>
-    </div>
-  </ion-content>
-  <div id="cont"></div>
-  <video id="videoDesktop" poster="../../assets/transparent.png" autoplay></video>
+  </div>
+</ion-content>
+
+<ion-content id="content-categorias" *ngIf="isMenuRight" [scrollY]="isMenuRight">
+  <ion-list *ngFor="let category of categories">
+    <ion-item>
+      <ion-label [routerLink]="" style="font-size: 120%;" (click)="getCategory(category)" class="ion-text-capitalize">{{category}}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<div id="cont"></div>
+<video id="videoDesktop" poster="../../assets/transparent.png" autoplay></video>
