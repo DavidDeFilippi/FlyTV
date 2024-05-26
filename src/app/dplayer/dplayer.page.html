@@ -1,6 +1,6 @@
-<ion-content id="channels" [scrollY]="isMenuLeft" *ngIf="isMenuLeft">
+<ion-content id="channels" [scrollY]="isMenuLeft" [ngStyle]="{'opacity': isMenuLeft ? '1' : '0'}">
   <ion-list *ngFor="let channel of channels">
-    <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full">
+    <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full" [disabled]="!isMenuLeft">
       <img class="channel-logo" [src]="channel.logo" />
       <ion-label (click)="playChannel(channel)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
 
@@ -14,7 +14,7 @@
 
     </ion-item>
 
-    <ion-item *ngIf="channel.url.includes('http://') && !channel.url.iframe" lines="full">
+    <ion-item *ngIf="channel.url.includes('http://') && !channel.url.iframe" lines="full" [disabled]="!isMenuLeft">
       <img class="channel-logo" [src]="channel.logo" />
       <ion-label (click)="openChannelUrl(channel.url)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
 
@@ -35,9 +35,9 @@
   </div>
 </ion-content>
 
-<ion-content id="content-categorias" *ngIf="isMenuRight" [scrollY]="isMenuRight">
+<ion-content id="content-categorias" [scrollY]="isMenuRight" [ngStyle]="{'opacity': isMenuRight ? '1' : '0'}">
   <ion-list *ngFor="let category of categories">
-    <ion-item>
+    <ion-item  [disabled]="!isMenuRight">
       <ion-label [routerLink]="" style="font-size: 120%;" (click)="getCategory(category)" class="ion-text-capitalize">{{category}}</ion-label>
     </ion-item>
   </ion-list>

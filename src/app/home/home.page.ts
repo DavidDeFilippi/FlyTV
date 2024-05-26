@@ -51,8 +51,24 @@ export class HomePage {
       text: 'Cerrar',
       role: 'cancel',
       handler: () => {
-        // App.exitApp();
         localStorage.setItem('dismisseddonation','1');
+      },
+    },
+  ];
+  public vlcAlertButtons = [
+    {
+      text: 'Descargar',
+      role: 'confirm',
+      handler: () => {
+        localStorage.setItem('dismisseddonation','1');
+        this.openWebSite('https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=es&gl=US&pli=1');
+      },
+    },
+    {
+      text: 'Cerrar',
+      role: 'cancel',
+      handler: () => {
+        
       },
     },
   ];
@@ -437,11 +453,7 @@ export class HomePage {
                 await this.simpleLoading(5000, '');
                 window.open('vlc://' + url, "_blank");
               } else {
-                await Share.share({
-                  title: 'Selecciona aplicacion de video',
-                  url: url,
-                  dialogTitle: 'Selecciona aplicacion de video',
-                });
+                this.presentVLCAlert();
               }
             });
             break;
@@ -453,11 +465,7 @@ export class HomePage {
                 await this.simpleLoading(5000, '');
                 window.open('vlc://' + url, "_blank");
               } else {
-                await Share.share({
-                  title: 'Selecciona aplicacion de video',
-                  url: url,
-                  dialogTitle: 'Selecciona aplicacion de video',
-                });
+                this.presentVLCAlert();
               }
             });
             break;
@@ -466,11 +474,7 @@ export class HomePage {
               await this.simpleLoading(5000, '');
               window.open('vlc://' + url, "_blank");
             } else {
-              await Share.share({
-                title: 'Selecciona aplicacion de video',
-                url: url,
-                dialogTitle: 'Selecciona aplicacion de video',
-              });
+              this.presentVLCAlert();
             }
         }
       }
@@ -551,6 +555,24 @@ export class HomePage {
         subHeader: 'Sorbete Apps necesita tu ayuda.',
         message: '¡Hola! Ayudanos a impulsar nuestro proyecto. Cualquier donación nos sería de ayuda para mantenernos atentos a esta aplicación.</br>El botón te llevará a mercado pago donde puedes ingresar un monto desde $1CLP.</br></br><img src="assets/mercadopago.jpg" />',
         buttons: this.alertButtons,
+        cssClass: 'donation-alert',
+        backdropDismiss: false,
+      });
+
+      await alert.present();
+
+      alert.onDidDismiss().then((data) => {
+        // this.globalVar.setExitDialog(false);
+      });
+  }
+
+  //:::::::::::::::ALERTA PARA DESCARGAR VLC::::::::::::
+  async presentVLCAlert() {
+      const alert = await this.alertController.create({
+        header: 'Canales VLC',
+        // subHeader: 'Sorbete Apps necesita tu ayuda.',
+        message: '</br><img src="assets/vlc.webp"/><br><br>Para ver este canal debes tener instalado el reproductor VLC for Android disponible en Google Play.',
+        buttons: this.vlcAlertButtons,
         cssClass: 'donation-alert',
         backdropDismiss: false,
       });
