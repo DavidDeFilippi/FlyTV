@@ -43,7 +43,7 @@ export class HomePage {
       text: 'Quiero Donar',
       role: 'confirm',
       handler: () => {
-        localStorage.setItem('dismisseddonation','1');
+        localStorage.setItem('dismisseddonation', '1');
         this.openWebSite('https://link.mercadopago.cl/sorbeteapps');
       },
     },
@@ -51,7 +51,7 @@ export class HomePage {
       text: 'Cerrar',
       role: 'cancel',
       handler: () => {
-        localStorage.setItem('dismisseddonation','1');
+        localStorage.setItem('dismisseddonation', '1');
       },
     },
   ];
@@ -60,7 +60,7 @@ export class HomePage {
       text: 'Descargar',
       role: 'confirm',
       handler: () => {
-        localStorage.setItem('dismisseddonation','1');
+        localStorage.setItem('dismisseddonation', '1');
         this.openWebSite('https://play.google.com/store/apps/details?id=org.videolan.vlc&hl=es&gl=US&pli=1');
       },
     },
@@ -68,7 +68,7 @@ export class HomePage {
       text: 'Cerrar',
       role: 'cancel',
       handler: () => {
-        
+
       },
     },
   ];
@@ -96,6 +96,8 @@ export class HomePage {
   previewAutorized: boolean = false;
   isDesktopFullScreen: boolean = false;
   intervalTransmitiendo: any;
+  intervalGetChilevision: any;
+  intervalCanal13: any;
   logData: any;
   notificationRead: boolean = true;
   playerOptions: any = {};
@@ -140,7 +142,7 @@ export class HomePage {
       setTimeout(() => {
         this.getLocalStorage();
         if (localStorage.getItem('played') == '1') {
-          if(localStorage.getItem('dismisseddonation') == null){
+          if (localStorage.getItem('dismisseddonation') == null) {
             this.presentDonationAlert();
           }
         }
@@ -150,6 +152,8 @@ export class HomePage {
 
   ionViewWillLeave() {
     clearInterval(this.intervalTransmitiendo);
+    clearInterval(this.intervalGetChilevision);
+    clearInterval(this.intervalCanal13);
   }
 
   // :::::: CARGA TODOS LOS CANALES Y SUS COMPLEMENTOS::::::::::
@@ -160,6 +164,8 @@ export class HomePage {
     loading.present();
     this.channelService.getChannels().subscribe((data) => {
       this.channels = data;
+      this.getChilevision();
+      this.getCanal13();
       this.category = this.globalVar.getGlobalCategory();
       this.listCategories();
       this.getCategory(this.category);
@@ -189,6 +195,59 @@ export class HomePage {
     });
   }
 
+  getChilevision() {
+    clearInterval(this.intervalGetChilevision);
+
+    this.channelService.getChilevision().subscribe(async (data) => {
+      let t = data;
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].id === 'chilevision') {
+          this.channels[i].url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+          break;
+        }
+      }
+    });
+
+    this.intervalGetChilevision = setInterval(() => {
+      this.channelService.getChilevision().subscribe(async (data) => {
+        let t = data;
+        for (let i = 0; i < this.channels.length; i++) {
+          if (this.channels[i].id === 'chilevision') {
+            this.channels[i].url = 'https://mdstrm.com/live-stream-playlist/63ee47e1daeeb80a30d98ef4.m3u8?access_token=' + t.token;
+            break;
+          }
+        }
+      });
+    }, 140000);
+  }
+
+  getCanal13() {
+    clearInterval(this.intervalCanal13);
+
+    this.channelService.getCanal13().subscribe(async (data) => {
+      let t = data;
+      for (let i = 0; i < this.channels.length; i++) {
+        if (this.channels[i].id === 'canal132') {
+          this.channels[i].url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+          break;
+        }
+      }
+    });
+
+    this.intervalCanal13 = setInterval(() => {
+      this.channelService.getCanal13().subscribe(async (data) => {
+        let t = data;
+        for (let i = 0; i < this.channels.length; i++) {
+          if (this.channels[i].id === 'canal132') {
+            this.channels[i].url = 'https://origin.dpsgo.com/ssai/event/bFL1IVq9RNGlWQaqgiFuNw/master.m3u8?auth-token=' + t.data.authToken;
+            break;
+          }
+        }
+      });
+    }, 90000);
+
+  }
+
   //:::::::CONFIGURACIONES DE LA APP QUE VIENEN DESE LA API::::::::
   async getAppSettings() {
     this.channelService.getAppSettings().subscribe((data) => {
@@ -213,7 +272,7 @@ export class HomePage {
           this.channels[i].transmitiendo.next = this.getNextPrograma(this.channels[i].parrilla);
         }
       }
-    }, 30000);
+    }, 60000);
   }
 
   // ::::::: REPRODUCE UN CANAL EN LA VISTA PREVIA EN UN TIEMPO DETERMINADO:::::::
@@ -365,13 +424,13 @@ export class HomePage {
   }
   // :::::::::::DETERMINA EN QUE MOMENTO SE MOSTRARA UN AD::::::::::::
   async showAds() {
-    if(this.appSettings.ads){
-      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+    if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+      if (this.appSettings.ads) {
         await this.showInterstitial();
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
-      } else {
-        this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
       }
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
+    } else {
+      this.globalVar.setNumberForAds(this.globalVar.getNumberForAds() + 1);
     }
   }
   // :::::::::MUESTRA LA ADD DE PANTALLA COMPLETA CON DURACION MENOR A LAS DEMAS::::::::::
@@ -383,6 +442,18 @@ export class HomePage {
     }
     await AdMob.prepareInterstitial(options);
     await AdMob.showInterstitial();
+  }
+  //::::::::::MUESTRA EL BANNER ADD:::::::::::::
+  async showBanner() {
+    const options: BannerAdOptions = {
+      adId: 'ca-app-pub-4427288659732696/1021994519',
+      adSize: BannerAdSize.ADAPTIVE_BANNER,
+      position: BannerAdPosition.BOTTOM_CENTER,
+      margin: 0,
+      // isTesting: true
+      // npa: true
+    };
+    AdMob.showBanner(options);
   }
   // ::::::::::::::::::::::::::
   // :::::::::FIN ADS::::::::::
@@ -439,7 +510,7 @@ export class HomePage {
     const canopen = await AppLauncher.canOpenUrl({ url: 'org.videolan.vlc' });
     this.stopPreviewChannel();
     setTimeout(async () => {
-      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null) {
+      if (this.globalVar.getNumberForAds() % 2 != 0 && localStorage.getItem('xa88') === null && this.appSettings.ads == true) {
         this.simpleLoading(5000, '');
         await this.showAds();
       } else {
@@ -550,38 +621,38 @@ export class HomePage {
 
   //:::::::::::::::ALERTA EMERGENTE PARA DONACIONES::::::::::::
   async presentDonationAlert() {
-      const alert = await this.alertController.create({
-        header: 'Ayudanos con una donación',
-        subHeader: 'Sorbete Apps necesita tu ayuda.',
-        message: '¡Hola! Ayudanos a impulsar nuestro proyecto. Cualquier donación nos sería de ayuda para mantenernos atentos a esta aplicación.</br>El botón te llevará a mercado pago donde puedes ingresar un monto desde $1CLP.</br></br><img src="assets/mercadopago.jpg" />',
-        buttons: this.alertButtons,
-        cssClass: 'donation-alert',
-        backdropDismiss: false,
-      });
+    const alert = await this.alertController.create({
+      header: 'Ayudanos con una donación',
+      subHeader: 'Sorbete Apps necesita tu ayuda.',
+      message: '¡Hola! Ayudanos a impulsar nuestro proyecto. Cualquier donación nos sería de ayuda para mantenernos atentos a esta aplicación.</br>El botón te llevará a mercado pago donde puedes ingresar un monto desde $1CLP.</br></br><img src="assets/mercadopago.jpg" />',
+      buttons: this.alertButtons,
+      cssClass: 'donation-alert',
+      backdropDismiss: false,
+    });
 
-      await alert.present();
+    await alert.present();
 
-      alert.onDidDismiss().then((data) => {
-        // this.globalVar.setExitDialog(false);
-      });
+    alert.onDidDismiss().then((data) => {
+      // this.globalVar.setExitDialog(false);
+    });
   }
 
   //:::::::::::::::ALERTA PARA DESCARGAR VLC::::::::::::
   async presentVLCAlert() {
-      const alert = await this.alertController.create({
-        header: 'Canales VLC',
-        // subHeader: 'Sorbete Apps necesita tu ayuda.',
-        message: '</br><img src="assets/vlc.webp"/><br><br>Para ver este canal debes tener instalado el reproductor VLC for Android disponible en Google Play.',
-        buttons: this.vlcAlertButtons,
-        cssClass: 'donation-alert',
-        backdropDismiss: false,
-      });
+    const alert = await this.alertController.create({
+      header: 'Canales VLC',
+      // subHeader: 'Sorbete Apps necesita tu ayuda.',
+      message: '</br><img src="assets/vlc.webp"/><br><br>Para ver este canal debes tener instalado el reproductor VLC for Android disponible en Google Play.',
+      buttons: this.vlcAlertButtons,
+      cssClass: 'donation-alert',
+      backdropDismiss: false,
+    });
 
-      await alert.present();
+    await alert.present();
 
-      alert.onDidDismiss().then((data) => {
-        // this.globalVar.setExitDialog(false);
-      });
+    alert.onDidDismiss().then((data) => {
+      // this.globalVar.setExitDialog(false);
+    });
   }
   // :::::::FUNCIONES PARA MANEJAR LA ORIENTACION DE LA PANTALLA:::::::::
   lockToPortrait() {
