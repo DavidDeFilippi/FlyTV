@@ -1,6 +1,9 @@
 <ion-content id="channels" [scrollY]="isMenuLeft" [ngStyle]="{'opacity': isMenuLeft ? '1' : '0'}">
   <ion-list *ngFor="let channel of channels">
     <ion-item *ngIf="channel.url.includes('https') && !channel.url.iframe" lines="full" [disabled]="!isMenuLeft">
+      <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : '#ff0230'}"
+            [attr.name]="channel.estado ? 'checkmark-outline' : 'close-outline'"
+            style="font-size: 21px; margin-right: 10px;"></ion-icon>
       <img class="channel-logo" [src]="channel.logo" />
       <ion-label (click)="playChannel(channel)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
 
@@ -15,6 +18,9 @@
     </ion-item>
 
     <ion-item *ngIf="channel.url.includes('http://') && !channel.url.iframe" lines="full" [disabled]="!isMenuLeft">
+      <ion-icon [ngStyle]="{'color': channel.estado ? 'rgb(25, 212, 0)' : '#ff0230'}"
+            [attr.name]="channel.estado ? 'checkmark-outline' : 'close-outline'"
+            style="font-size: 21px; margin-right: 10px;"></ion-icon>
       <img class="channel-logo" [src]="channel.logo" />
       <ion-label (click)="openChannelUrl(channel.url)" [routerLink]="" class="ion-text-capitalize">{{channel.name}}
 
@@ -44,4 +50,4 @@
 </ion-content>
 
 <div id="cont"></div>
-<video id="videoDesktop" poster="../../assets/transparent.png" autoplay></video>
+<video id="videoDesktop" poster="../../assets/transparent.png" autoplay controls></video>

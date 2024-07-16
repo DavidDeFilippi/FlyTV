@@ -63,10 +63,17 @@ export class DplayerPage implements OnInit {
     this.platform.backButton.subscribeWithPriority(9, () => {
       if (!this.outlet?.canGoBack()) {
         // App.exitApp();
-        if (!this.globalVar.isMobile()) {
-          this.globalVar.setExitDialog(true);
+        if(this.isMenuMiddle){
+          if (!this.globalVar.isMobile()) {
+            this.globalVar.setExitDialog(true);
+          }
+          this.presentExitAlert();
+        }else{
+          this.isMenuLeft = false;
+          this.isMenuMiddle = true;
+          this.isMenuRight = false;
         }
-        this.presentExitAlert();
+        
       }
     });
   }
@@ -113,9 +120,9 @@ export class DplayerPage implements OnInit {
     new VideoHls('', 'stop', this.isMobile, 'videoDesktop');
     new VideoHls(ch.url, 'play', this.isMobile, 'videoDesktop');
     localStorage.setItem('lastchannel', ch.id);
-    this.isMenuLeft = false;
-    this.isMenuMiddle = true;
-    this.isMenuRight = false;
+    // this.isMenuLeft = false;
+    // this.isMenuMiddle = true;
+    // this.isMenuRight = false;
   }
 
   async getTransmitiendo() {
@@ -209,7 +216,7 @@ export class DplayerPage implements OnInit {
   }
 
   getCategory(category?: string) {
-    category = !category || category === '' ? 'nacionales' : category;
+    category = !category || category === '' ? 'premium' : category;
 
     this.channels = [];
 

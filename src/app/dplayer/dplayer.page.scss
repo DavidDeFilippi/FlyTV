@@ -81,3 +81,21 @@ ion-col:focus-visible {
     // font-weight: bold;
     outline: none;
 }
+
+#videoDesktop::-webkit-media-controls-panel,
+#videoDesktop::-webkit-media-controls-play-button,
+#videoDesktop::-webkit-media-controls-volume-slider-container,
+#videoDesktop::-webkit-media-controls-volume-slider,
+#videoDesktop::-webkit-media-controls-mute-button,
+#videoDesktop::-webkit-media-controls-timeline,
+#videoDesktop::-webkit-media-controls-current-time-display,
+#videoDesktop::-webkit-media-controls-timeline-container,
+#videoDesktop::-webkit-media-controls-time-remaining-display,
+#videoDesktop::-webkit-media-controls-seek-back-button,
+#videoDesktop::-webkit-media-controls-seek-forward-button,
+#videoDesktop::-webkit-media-controls-fullscreen-button,
+#videoDesktop::-webkit-media-controls-rewind-button,
+#videoDesktop::-webkit-media-controls-return-to-realtime-button,
+#videoDesktop::-webkit-media-controls-toggle-closed-captions-button {
+  display: none !important;
+}

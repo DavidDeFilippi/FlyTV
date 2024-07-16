@@ -32,7 +32,8 @@ const routes: Routes = [
 // const routes: Routes = [
 //   {
 //     path: '',
-//     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+//     redirectTo: 'home',
+//     pathMatch: 'full'
 //   },
 //   {
 //     path: 'reproductor',
@@ -41,6 +42,10 @@ const routes: Routes = [
 //   {
 //     path: 'iframe',
 //     loadChildren: () => import('./iframe/iframe.module').then( m => m.IframePageModule)
+//   },
+//   {
+//     path: 'dplayer',
+//     loadChildren: () => import('./dplayer/dplayer.module').then( m => m.DplayerPageModule)
 //   },
 // ];
 

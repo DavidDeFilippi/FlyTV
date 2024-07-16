@@ -4,8 +4,12 @@ var showMenu = false;
 function VideoHls(videoSource, action, isMobile, playerID) {
   if (Hls.isSupported() && videoSource != '' && action == 'play') {
 
-    document.getElementById(playerID).style.backgroundSize = "30%";
-    document.getElementById(playerID).style.backgroundImage = "url(../../assets/loadingSpinner.gif)";
+    if (playerID == "videoPreview") {
+      document.getElementById(playerID).style.backgroundSize = "30%";
+      document.getElementById(playerID).style.backgroundImage = "url(../../assets/loadingSpinner.gif)";
+    }
+    // document.getElementById(playerID).style.backgroundSize = "30%";
+    // document.getElementById(playerID).style.backgroundImage = "url(../../assets/loadingSpinner.gif)";
 
     video = document.getElementById(playerID);
     hls = new Hls();
@@ -72,8 +76,8 @@ function getListeners(isMobile, playerID) {
         document.getElementById(playerID).style.backgroundImage = "url(../../assets/no-disponible.png)";
         document.getElementById(playerID).style.backgroundSize = "100%";
       } else if (playerID == 'videoDesktop') {
-        document.getElementById(playerID).style.backgroundImage = "url(../../assets/videoError.png)";
-        document.getElementById(playerID).style.backgroundSize = "15%";
+        // document.getElementById(playerID).style.backgroundImage = "url(../../assets/videoError.png)";
+        // document.getElementById(playerID).style.backgroundSize = "15%";
       }
     }
   });
